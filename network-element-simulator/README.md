@@ -12,22 +12,29 @@ Each NE contains equipment in hierarchy:
 This is a somewhat a generic network element implementation,
 all equipment inside the device instance is configured (via env attribute).
 
-## Supported Messages
-
-| Operation name  | Input Params  | Return  | Description   |
-| :-------------- |:-------------:| ------- | ------------- |
-| list_ne         |     p          | ```[{NE_TYPE, NE_DATA}]``` |
-| get_ne          | ```NE_ID```         |   ```{NE_TYPE, NE_DATA}```   |
-| add_ne          | ``` {NE_TYPE, NE_DATA} ```  |  ``` {ok, NE_ID} ```  |
-| rem_ne          | ```NE_ID```         |    ``` {ok} ```   |
-
-### Types
-  - NY_TYPE : atom()
-  - NY_ID : term()
-
 ## How to run
 erl -make
 
 erl -env ERL_LIBS "."
   1> application:start(network).
+
+## Supported Messages (API)
+
+| Operation name  | Input Params  | Return  | Description   |
+| :-------------- |:-------------:| ------- | ------------- |
+| list_all        |               | ```[NE_DATA]``` |
+| get             | ```{ne, NE_ID} ```   |   ```{ok, NE_DATA}```   |
+| add             | ```{ne, NE_DATA} ``` |  ``` {ok, {NE_ID, NE_PID}```  |
+| remove          | ```{ne, NE_ID}```   |    ``` {ok} ```   |
+
+### Types
+  - NE_TYPE : atom()
+  - NE_ID : term()
+  - NE_DATA: ``` [{ne_id,   NE_ID},
+                  {ne_type, NE_TYPE},
+                  {ne_pid,  NE_PID},
+                 ]
+             ```
+
+
 
