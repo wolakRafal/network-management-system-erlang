@@ -14,17 +14,16 @@ all equipment inside the device instance is configured (via env attribute).
 
 ## Supported Messages
 
-    | Operation name  | Input Params | Return  | Description  |   |
-    |-----------------|--------------|---------|--------------|---|
-    | list_ne         |              | [{<NE_TYPE>, <NE_DATA>}]  |   |   |
-    | get_ne          | <NE_ID>      | not_found OR {<NE_TYPE>, <NE_DATA>}  |   |   |
-    | rem_ne          | <NE_ID>      | {ok}     |   |   |
+| Operation name  | Input Params  | Return  | Description   |
+| :-------------- |:-------------:| ------- | ------------- |
+| list_ne         |               | ```[{NE_TYPE, NE_DATA}]``` |
+| get_ne          | ```NE_ID```         |   ```{NE_TYPE, NE_DATA}```   |
+| add_ne          | ``` {NE_TYPE, NE_DATA} ```  |  ``` {ok, NE_ID} ```  |
+| rem_ne          | ```NE_ID```         |    ``` {ok} ```   |
 
-  - listNe(): [{<NE_TYPE>: atom(), <NE_ID>: term()}]
-  - getNe(NE_ID): {<NE data>}
-  - addNe(<NE data>): {<NE data>}
-  - removeNe
-
+### Types
+  - NY_TYPE : atom()
+  - NY_ID : term()
 
 ## How to run
 erl -make
