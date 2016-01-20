@@ -16,7 +16,7 @@ all equipment inside the device instance is configured (via env attribute).
 
 | Operation name  | Input Params  | Return  | Description   |
 | :-------------- |:-------------:| ------- | ------------- |
-| list_ne         |               | ```[{NE_TYPE, NE_DATA}]``` |
+| list_ne         |     p          | ```[{NE_TYPE, NE_DATA}]``` |
 | get_ne          | ```NE_ID```         |   ```{NE_TYPE, NE_DATA}```   |
 | add_ne          | ``` {NE_TYPE, NE_DATA} ```  |  ``` {ok, NE_ID} ```  |
 | rem_ne          | ```NE_ID```         |    ``` {ok} ```   |
