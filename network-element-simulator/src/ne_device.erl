@@ -24,7 +24,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {name, neType, ip, selfUri}).
+-record(state, {name, neType, pid}).
 
 %%%===================================================================
 %%% API
@@ -59,9 +59,9 @@ start_link(Args) ->
 -spec(init(Args :: term()) ->
   {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term()} | ignore).
-init({NeName, NeType, NeIp, SelfUri} = Args) ->
+init({NeName, NeType} = Args) ->
   io:format("Ne Device Started: ~p~n", [Args]),
-  {ok, #state{name = NeName, neType = NeType, ip = NeIp, selfUri = SelfUri}}.
+  {ok, #state{name = NeName, neType = NeType}}.
 
 %%--------------------------------------------------------------------
 %% @private

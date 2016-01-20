@@ -55,7 +55,7 @@ start_link(StartArgs) ->
   }} |
   ignore |
   {error, Reason :: term()}).
-init([{ne_list, DefaultNeDevice}]) ->
+init([{ne_list, DefaultNeDevice, EmptyNeDevice}]) ->
   RestartStrategy = one_for_one,
   MaxRestarts = 0, %% We do not restarts of ne device
   MaxSecondsBetweenRestarts = 1,
@@ -66,10 +66,13 @@ init([{ne_list, DefaultNeDevice}]) ->
   Shutdown = 2000,
   Type = worker,
 
-  AChild = {ne_device, {ne_device, start_link, DefaultNeDevice},
+  DefaultNeChild = {ne_device, {ne_device, start_link, DefaultNeDevice},
     Restart, Shutdown, Type, [ne_device]},
 
-  {ok, {SupFlags, [AChild]}}.
+  EmptyNeChild = {ne_device, {ne_device, start_link, EmptyNeDevice},
+    Restart, Shutdown, Type, [ne_device]},
+
+  {ok, {SupFlags, [DefaultNeChild, EmptyNeChild]}}.
 
 %%%===================================================================
 %%% Internal functions

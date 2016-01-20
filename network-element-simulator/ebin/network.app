@@ -15,9 +15,9 @@
     stdlib
   ]},
   {mod, {network, [
-   %% { management_domain, md1},
+    %% { management_domain, md1},
     %% ne record { ne-name, ne-type, ne-ip, self-uri
-    { ne_list, [{"f7_1", f7, "10.192.0.1" , "/md/1/me/1"}] }
+    { ne_list, [{"default-ne", default}, {"empty-ne", empty}] }
   ]}},
   %% here will go defaults (static caps)
   {env, [ ]}
