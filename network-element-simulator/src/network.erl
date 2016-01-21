@@ -46,6 +46,7 @@
 start(normal, StartArgs) ->
   network_sup:start_link(StartArgs).
 
+
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
@@ -64,7 +65,7 @@ stop(_State) ->
 %%%===================================================================
 
 list_all() ->
-  [].
+  supervisor:which_children(network_sup).
 
 get_ne(NeId) ->
   {ok, {}}.

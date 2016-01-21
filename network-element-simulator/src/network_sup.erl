@@ -17,7 +17,7 @@
 %% Supervisor callbacks
 -export([init/1]).
 
--define(SERVER, ?MODULE).
+-define(SUP_NAME, ?MODULE).
 
 %%%===================================================================
 %%% API functions
@@ -32,7 +32,7 @@
 -spec(start_link(StartArgs :: term()) ->
   {ok, Pid :: pid()} | ignore | {error, Reason :: term()}).
 start_link(StartArgs) ->
-  supervisor:start_link({local, ?SERVER}, ?MODULE, StartArgs).
+  supervisor:start_link({local, ?SUP_NAME}, ?MODULE, StartArgs).
 
 %%%===================================================================
 %%% Supervisor callbacks
@@ -56,26 +56,26 @@ start_link(StartArgs) ->
   ignore |
   {error, Reason :: term()}).
 init([{ne_list, [DefaultNeDevice, EmptyNeDevice]}]) ->
-  RestartStrategy = one_for_one,
-  MaxRestarts = 0, %% We do not restarts of ne device
+  RestartStrategy = one_for_one, %%  a simplified one_for_one supervisor, where all child processes
+                                        %% are dynamically added instances of the same process type,
+                                        %%  i.e. running the same code.
+  MaxRestarts = 3,
   MaxSecondsBetweenRestarts = 1,
 
   SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
 
-  Restart = permanent,
-  Shutdown = 2000,
+  Restart = permanent, %% a transient child process will be restarted only if it terminates abnormally,
+                       %% i.e. with another exit reason than normal, shutdown or {shutdown,Term}
+                       %% We do not restart of ne device
+                       %% it should be handled by operators/administrators manually
+  Shutdown = 2000,     % waits 2 sec for children exit signal with reason 'shutdown'
   Type = worker,
 
-  %% io:format("Ne Device Started: ~p~n", [DefaultNeDevice]),
+  DefaultNeChild = {ne_default, {ne_device, start_link, [DefaultNeDevice]},
+    Restart, Shutdown, Type, [ne_device]},
 
-  io:format("DefaultNeDevice~p~n",[DefaultNeDevice]),
-  io:format("EmptyNeDevice~p~n",[EmptyNeDevice]),
-
-  DefaultNeChild = {ne_device, {ne_device, start_link, [DefaultNeDevice]},
-    Restart, Shutdown, Type},
-
-  EmptyNeChild = {ne_device_2, {ne_device, start_link, [EmptyNeDevice]},
-    Restart, Shutdown, Type},
+  EmptyNeChild = {ne_empty, {ne_device, start_link, [EmptyNeDevice]},
+    Restart, Shutdown, Type, [ne_device]},
 
   {ok, {SupFlags, [DefaultNeChild, EmptyNeChild]}}.
 
