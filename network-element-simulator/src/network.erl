@@ -16,7 +16,9 @@
 -export([start/2, stop/1]).
 
 %% Application API
--export([list_all/0, get_ne/1, add_ne/1, remove_ne/1]).
+-export([list_all/0, count/0, get/1, add/1, remove/1, stop_ne/1]).
+
+-define(NET_SUP, network_sup).
 
 
 %%%===================================================================
@@ -65,16 +67,22 @@ stop(_State) ->
 %%%===================================================================
 
 list_all() ->
-  supervisor:which_children(network_sup).
+  supervisor:which_children(?NET_SUP).
 
-get_ne(NeId) ->
-  {ok, {}}.
+count() ->
+  supervisor:count_children(?NET_SUP).
 
-add_ne(NeData) ->
-  {ok, ne_pid}.
+get(NeId) ->
+  {ok, lists:keyfind(NeId, 1, supervisor:which_children(?NET_SUP))}.
 
-remove_ne(NeId) ->
-  {ok}.
+add(ChildSpec) ->
+  supervisor:start_child(?NET_SUP, ChildSpec).
+
+stop_ne(NeId) ->
+  supervisor:terminate_child(?NET_SUP, NeId).
+
+remove(NeId) ->
+  supervisor:delete_child(?NET_SUP, NeId).
 
 %%%===================================================================
 %%% Internal functions

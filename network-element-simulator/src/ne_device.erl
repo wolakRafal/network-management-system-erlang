@@ -110,6 +110,7 @@ handle_cast(_Request, State) ->
   {noreply, NewState :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term(), NewState :: #state{}}).
 handle_info(_Info, State) ->
+  io:format("Handle Info: ~p~n", [State]),
   {noreply, State}.
 
 %%--------------------------------------------------------------------
