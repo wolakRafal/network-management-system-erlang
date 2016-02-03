@@ -16,7 +16,12 @@
 
 all_tests() ->
   try
-    all_tests0()
+    io:format("#########################################~n", []),
+    io:format("#### OPTICAL NETWORK SIMULATOR TESTS ####~n"),
+    io:format("#########################################~n"),
+    all_tests0(),
+    io:format("TESTS FINISHED~n"),
+    passed
   catch
     Type:Error ->
       io:format(
@@ -31,10 +36,10 @@ all_tests0() ->
     passed = ne_device_test:all_tests(),
     passed.
 
-
-%%%%% Setup
+%%%%% Setup empty network
 setup_network() ->
-  network:start(normal, []),
+  io:format("~~ SETUP EMPTY NETWORK ~~~n"),
+  network:start(normal, [{ne_list, []}]),
   ok.
 
 check_network() ->

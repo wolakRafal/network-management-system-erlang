@@ -13,4 +13,5 @@
 -export([all_tests/0]).
 
 all_tests() ->
+  io:format("~~ NE DEVICE TESTS ~n"),
   passed.
