@@ -55,7 +55,7 @@ start_link(StartArgs) ->
   }} |
   ignore |
   {error, Reason :: term()}).
-init([{ne_list, [DefaultNeDevice, EmptyNeDevice]}]) ->
+init([{ne_list, NeList}]) ->
   RestartStrategy = one_for_one, %%  a simplified one_for_one supervisor, where all child processes
                                         %% are dynamically added instances of the same process type,
                                         %%  i.e. running the same code.
@@ -71,13 +71,9 @@ init([{ne_list, [DefaultNeDevice, EmptyNeDevice]}]) ->
   Shutdown = 2000,     % waits 2 sec for children exit signal with reason 'shutdown'
   Type = worker,
 
-  DefaultNeChild = {ne_default, {ne_device, start_link, [DefaultNeDevice]},
-    Restart, Shutdown, Type, [ne_device]},
+  ChildSpecs = lists:map(fun(NEAttr) -> {ne_default, {ne_device, start_link, [NEAttr]}, Restart, Shutdown, Type, [ne_device]} end, NeList),
 
-  EmptyNeChild = {ne_empty, {ne_device, start_link, [EmptyNeDevice]},
-    Restart, Shutdown, Type, [ne_device]},
-
-  {ok, {SupFlags, [DefaultNeChild, EmptyNeChild]}}.
+  {ok, {SupFlags, ChildSpecs}}.
 
 %%%===================================================================
 %%% Internal functions

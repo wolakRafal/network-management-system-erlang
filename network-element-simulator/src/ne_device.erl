@@ -11,6 +11,7 @@
 
 -behaviour(gen_server).
 
+-include("network.hrl").
 %% API
 -export([start_link/1]).
 
@@ -24,7 +25,15 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {name, neType, pid}).
+-record(state, {name,   %% device name - configurable
+                neType, %% device type - static
+                manId,  %% manufacturer ID - static
+                plugs = [], %% list of equipped plugs (contain record #plug)
+                controlPorts = [], %% List of control ports (PIDs), e.g where to send notifications
+                fiberMap = {}, %% routing table
+                eventLog = [], %% Log with all events on device
+                eventLogId = 0 %% Last Event Log Id
+}).
 
 %%%===================================================================
 %%% API
@@ -61,7 +70,7 @@ start_link(Args) ->
   {stop, Reason :: term()} | ignore).
 init({NeName, NeType} = Args) ->
   io:format("Ne Device Started: ~p~n", [Args]),
-  {ok, #state{name = NeName, neType = NeType}}.
+  {ok, #state{name = NeName, neType = NeType, manId = gen_id(NeType), plugs = default_plugs()}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -70,14 +79,18 @@ init({NeName, NeType} = Args) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec(handle_call(Request :: term(), From :: {pid(), Tag :: term()},
-    State :: #state{}) ->
-  {reply, Reply :: term(), NewState :: #state{}} |
-  {reply, Reply :: term(), NewState :: #state{}, timeout() | hibernate} |
-  {noreply, NewState :: #state{}} |
-  {noreply, NewState :: #state{}, timeout() | hibernate} |
-  {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
-  {stop, Reason :: term(), NewState :: #state{}}).
+handle_call({add_plug, _Plug}, _From, State) ->
+  {reply, ok, State};
+
+handle_call({remove_plug}, _From, State) ->
+  {reply, ok, State};
+
+handle_call({update_plug}, _From, State) ->
+  {reply, ok, State};
+
+handle_call({register_for_events}, _From, State) ->
+  {reply, ok, State};
+
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
 
@@ -109,6 +122,14 @@ handle_cast(_Request, State) ->
   {noreply, NewState :: #state{}} |
   {noreply, NewState :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term(), NewState :: #state{}}).
+handle_info({heart_beat}, State) ->
+  io:format("Handle Info: ~p~n", [State]),
+  {noreply, State};
+
+handle_info({packet, Packet}, State) ->
+  io:format("Handle Info: Receive packet ~p~n~p~n", [Packet, State]),
+  {noreply, State};
+
 handle_info(_Info, State) ->
   io:format("Handle Info: ~p~n", [State]),
   {noreply, State}.
@@ -146,3 +167,14 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+gen_id(NeType) ->
+  NeType ++ "-" ++ integer_to_list(os:system_time()).
+
+%% default list of plugs A, B, C, D
+default_plugs() ->
+  PlugA = #plug{id = a},
+  PlugB = #plug{id = b},
+  PlugC = #plug{id = c},
+  PlugD = #plug{id = d},
+  [PlugA, PlugB, PlugC, PlugD].
