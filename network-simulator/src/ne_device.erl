@@ -70,7 +70,7 @@ start_link(Args) ->
   {stop, Reason :: term()} | ignore).
 init({NeName, NeType} = Args) ->
   io:format("Ne Device Started: ~p~n", [Args]),
-  {ok, #state{name = NeName, neType = NeType, manId = gen_id(NeType), plugs = default_plugs()}}.
+  {ok, #state{name = NeName, neType = NeType, manId = gen_id(NeName), plugs = default_plugs()}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -168,8 +168,8 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-gen_id(NeType) ->
-  NeType ++ "-" ++ integer_to_list(os:system_time()).
+gen_id(NeName) ->
+  NeName ++ "-" ++ integer_to_list(os:system_time()).
 
 %% default list of plugs A, B, C, D
 default_plugs() ->

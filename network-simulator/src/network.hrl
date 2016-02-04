@@ -22,6 +22,9 @@
 %% Static NE data
 -record(neData, {name, neType, manId}).
 
+%% NE specification - for starting NE child processes
+-record(neSpec, {name, neType}).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%        Messages       %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

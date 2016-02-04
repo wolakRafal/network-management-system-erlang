@@ -13,6 +13,8 @@
 %% API
 -export([all_tests/0]).
 
+-define(TEST_NE_NAME, "test-ne").
+-define(TEST_NE_ID, list_to_atom(?TEST_NE_NAME)).
 
 all_tests() ->
   try
@@ -20,7 +22,7 @@ all_tests() ->
     io:format("#### OPTICAL NETWORK SIMULATOR TESTS ####~n"),
     io:format("#########################################~n"),
     all_tests0(),
-    io:format("TESTS FINISHED~n"),
+    io:format("ALL TESTS FINISHED~n"),
     passed
   catch
     Type:Error ->
@@ -32,16 +34,29 @@ all_tests() ->
 all_tests0() ->
     ok = setup_network(),
     ok = check_network(),
-%%    passed = test_create_ne(),
+    ok= test_create_ne(),
+    ok = test_remove_ne(),
     passed = ne_device_test:all_tests(),
     passed.
 
-%%%%% Setup empty network
+test_create_ne() ->
+  {ok, NePid} = network:add_ne({?TEST_NE_NAME, test_ne_type}),
+  io:format("NE Created. ChildSpec = ~p~n", [NePid]),
+  ok.
+
+test_remove_ne() ->
+  ok = network:stop_ne(?TEST_NE_ID),
+  ok = network:remove_ne(?TEST_NE_ID),
+  io:format("NE ~w stoped and removed from Network. ~n", [?TEST_NE_ID]),
+  ok.
+
+%%%%% Setup
 setup_network() ->
-  io:format("~~ SETUP EMPTY NETWORK ~~~n"),
-  network:start(normal, [{ne_list, []}]),
+  io:format("~~ SETUP NETWORK [with 2 elements]~~~n"),
+  network:start(normal, [{ne_list, [{"default-ne", default}, {"empty-ne", empty}]}]),
   ok.
 
 check_network() ->
-  [] = network:list_all(),
+  2 = network:ne_count(),
+  2 = length(network:list_all()),
   ok.

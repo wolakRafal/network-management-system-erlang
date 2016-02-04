@@ -71,7 +71,10 @@ init([{ne_list, NeList}]) ->
   Shutdown = 2000,     % waits 2 sec for children exit signal with reason 'shutdown'
   Type = worker,
 
-  ChildSpecs = lists:map(fun(NEAttr) -> {ne_default, {ne_device, start_link, [NEAttr]}, Restart, Shutdown, Type, [ne_device]} end, NeList),
+  ChildSpecs = lists:map( fun({NeName, _NeType} = NEAttr ) ->
+                            {list_to_atom(NeName), {ne_device, start_link, [NEAttr]}, Restart, Shutdown, Type, [ne_device]}
+                          end,
+                          NeList),
 
   {ok, {SupFlags, ChildSpecs}}.
 

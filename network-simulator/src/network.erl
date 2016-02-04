@@ -15,8 +15,11 @@
 %% Application callbacks
 -export([start/2, stop/1]).
 
+%% admin operations
+-export([count_children/0]).
+
 %% Application API
--export([list_all/0, count/0, get/1, add/1, remove/1, stop_ne/1]).
+-export([list_all/0, get/1, add_ne/1, remove_ne/1, stop_ne/1, ne_count/0]).
 
 -define(NET_SUP, network_sup).
 
@@ -69,21 +72,39 @@ stop(_State) ->
 list_all() ->
   supervisor:which_children(?NET_SUP).
 
-count() ->
-  supervisor:count_children(?NET_SUP).
+%% counts all active NE devices
+ne_count() ->
+  {workers, NeProcCount} = lists:keyfind(workers, 1, supervisor:count_children(?NET_SUP)),
+  NeProcCount.
 
 get(NeId) ->
   {ok, lists:keyfind(NeId, 1, supervisor:which_children(?NET_SUP))}.
 
-add(ChildSpec) ->
+%% Add Network Element as a child to This optical network
+%% Takes tuple {NeName:string, NeType:atom()}
+%% return {ok, Child :: child()}
+%%
+add_ne({NeName, _NeType} = NeData) ->
+  ChildSpec = {list_to_atom(NeName), {ne_device, start_link, [NeData]}, permanent, 2000, worker, [ne_device]},
   supervisor:start_child(?NET_SUP, ChildSpec).
 
-stop_ne(NeId) ->
-  supervisor:terminate_child(?NET_SUP, NeId).
+%% stop NE device
+stop_ne(NeID) ->
+  supervisor:terminate_child(?NET_SUP, NeID).
 
-remove(NeId) ->
-  supervisor:delete_child(?NET_SUP, NeId).
+%% Permanently removes NE device form network
+%% return ok.
+remove_ne(NeID) ->
+  supervisor:delete_child(?NET_SUP, NeID).
+
+%%%===================================================================
+%%% Admin functions, for diagnosis and maintenance
+%%%===================================================================
+
+count_children() ->
+  supervisor:count_children(?NET_SUP).
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
