@@ -25,14 +25,12 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {name,   %% device name - configurable
-                neType, %% device type - static
-                manId,  %% manufacturer ID - static
-                plugs = [], %% list of equipped plugs (contain record #plug)
-                controlPorts = [], %% List of control ports (PIDs), e.g where to send notifications
-                fiberMap = {}, %% routing table
-                eventLog = [], %% Log with all events on device
-                eventLogId = 0 %% Last Event Log Id
+-record(state, {attr          = #{} :: map(),     %% Attributes of device, KV store
+                plugs         = []  :: list(),    %% list of equipped plugs (contain record #plug)
+                controlPorts  = []  :: pid(),     %% List of control ports (PIDs), e.g where to send events from event log
+                routingTable  = #{} :: map(),     %% routing table
+                eventLog      = []  :: list(),    %% Log with all events on device, limited list
+                eventLogId    = 0   :: integer()  %% Last Event Log Id
 }).
 
 %%%===================================================================
@@ -48,7 +46,7 @@
 -spec(start_link(Args :: term()) ->
   {ok, Pid :: pid()} | ignore | {error, Reason :: term()}).
 start_link(Args) ->
-  gen_server:start_link(?MODULE, Args, []). % server has no name thus  is not registered
+  gen_server:start_link(?MODULE, Args, []). % this process has no name thus  is not registered
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -65,12 +63,12 @@ start_link(Args) ->
 %%                     {stop, Reason}
 %% @end
 %%--------------------------------------------------------------------
--spec(init(Args :: term()) ->
+-spec(init(InitState :: term()) ->
   {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term()} | ignore).
-init({NeName, NeType} = Args) ->
-  io:format("Ne Device Started: ~p~n", [Args]),
-  {ok, #state{name = NeName, neType = NeType, manId = gen_id(NeName), plugs = default_plugs()}}.
+init(InitState) ->
+  io:format("Ne Device Started: ~p~n", [InitState]),
+  {ok, #state{attr = InitState, plugs = default_plugs()}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -167,9 +165,6 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
-gen_id(NeName) ->
-  NeName ++ "-" ++ integer_to_list(os:system_time()).
 
 %% default list of plugs A, B, C, D
 default_plugs() ->
