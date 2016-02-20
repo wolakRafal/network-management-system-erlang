@@ -72,7 +72,7 @@ init([{ne_list, NeList}]) ->
   Type = worker,
 
   ChildSpecs = lists:map( fun(NEAttr) ->
-                            {list_to_atom(element(2, hd(NEAttr))), {ne_device, start_link, [NEAttr]}, Restart, Shutdown, Type, [ne_device]}
+                            {list_to_atom(maps:get(ne_name,NEAttr)), {ne_device, start_link, [NEAttr]}, Restart, Shutdown, Type, [ne_device]}
                           end,
                           NeList),
 

@@ -85,7 +85,7 @@ get(NeId) ->
 %% return {ok, Child :: child()}
 %%
 add_ne(NeAttr) ->
-  ChildSpec = {list_to_atom(element(2, hd(NeAttr))), {ne_device, start_link, [NeAttr]}, permanent, 2000, worker, [ne_device]},
+  ChildSpec = {list_to_atom(maps:get(ne_name, NeAttr)), {ne_device, start_link, [NeAttr]}, permanent, 2000, worker, [ne_device]},
   supervisor:start_child(?NET_SUP, ChildSpec).
 
 %% stop NE device
