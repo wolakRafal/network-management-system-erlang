@@ -14,6 +14,7 @@
 -export([all_tests/0]).
 
 -define(TEST_NE_NAME, "test-ne").
+-define(NE_NAME, ne_name).
 -define(TEST_NE_ID, list_to_atom(?TEST_NE_NAME)).
 
 all_tests() ->
@@ -34,13 +35,13 @@ all_tests() ->
 all_tests0() ->
     ok = setup_network(),
     ok = check_network(),
-    ok= test_create_ne(),
+    ok = test_create_ne(),
     ok = test_remove_ne(),
     passed = ne_device_test:all_tests(),
     passed.
 
 test_create_ne() ->
-  {ok, NePid} = network:add_ne({?TEST_NE_NAME, test_ne_type}),
+  {ok, NePid} = network:add_ne([{?NE_NAME, ?TEST_NE_NAME}, {ne_type, test_ne_type}]),
   io:format("NE Created. ChildSpec = ~p~n", [NePid]),
   ok.
 
@@ -53,7 +54,10 @@ test_remove_ne() ->
 %%%%% Setup
 setup_network() ->
   io:format("~~ SETUP NETWORK [with 2 elements]~~~n"),
-  network:start(normal, [{ne_list, [{"default-ne", default}, {"empty-ne", empty}]}]),
+  network:start(normal, [{ne_list, [
+    [{ne_name , "default-ne"} , {ne_type, default}],
+    [{ne_name , "empty-ne"}   , {ne_type, empty}]
+  ]}]),
   ok.
 
 check_network() ->

@@ -16,8 +16,12 @@
   ]},
   {mod, {network, [
     %% { management_domain, md1},
-    %% ne record { ne-name, ne-type, ne-ip, self-uri
-    { ne_list, [{"default-ne", default}, {"empty-ne", empty}] }
+    %% ne record { ne_name, ne_type,
+    { ne_list, [
+                  [{ne_name , "default-ne"} , {ne_type, default}],
+                  [{ne_name , "empty-ne"}   , {ne_type, empty}]
+                ]
+    }
   ]}},
   %% here will go defaults (static caps)
   {env, [ ]}

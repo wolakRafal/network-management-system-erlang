@@ -68,7 +68,7 @@ start_link(Args) ->
   {stop, Reason :: term()} | ignore).
 init(InitState) ->
   io:format("Ne Device Started: ~p~n", [InitState]),
-  {ok, #state{attr = InitState, plugs = default_plugs()}}.
+  {ok, #state{attr = maps:from_list(InitState), plugs = default_plugs()}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -77,6 +77,18 @@ init(InitState) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
+%% adds or modify(overwrite) existing attributes
+handle_call({update_attributes, Attr}, _From, S) ->
+  {reply, ok, S#state{attr = maps:merge(S#state.attr, Attr)}};
+%% replace whole attributes map
+handle_call({replace_attributes, Attr}, _From, S) ->
+  {reply, ok, S#state{attr = Attr}};
+
+%% gets values for all keys . Any key in Keys that does not exist in Attributes Map are ignored.
+handle_call({get_attributes, Keys}, _From, S) ->
+  {reply, maps:with(Keys,S), S};
+
+
 handle_call({add_plug, _Plug}, _From, State) ->
   {reply, ok, State};
 

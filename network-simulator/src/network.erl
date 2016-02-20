@@ -84,8 +84,8 @@ get(NeId) ->
 %% Takes tuple {NeName:string, NeType:atom()}
 %% return {ok, Child :: child()}
 %%
-add_ne({NeName, _NeType} = NeData) ->
-  ChildSpec = {list_to_atom(NeName), {ne_device, start_link, [NeData]}, permanent, 2000, worker, [ne_device]},
+add_ne(NeAttr) ->
+  ChildSpec = {list_to_atom(element(2, hd(NeAttr))), {ne_device, start_link, [NeAttr]}, permanent, 2000, worker, [ne_device]},
   supervisor:start_child(?NET_SUP, ChildSpec).
 
 %% stop NE device
