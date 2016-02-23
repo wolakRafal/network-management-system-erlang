@@ -187,3 +187,7 @@ default_plugs() ->
   PlugC = #plug{id = c},
   PlugD = #plug{id = d},
   [PlugA, PlugB, PlugC, PlugD].
+
+%% TODO: Plugs manipulation based on API
+%% TODO: Update README.md
+%% TODO: scripts: automation tests for Mac , and unix
