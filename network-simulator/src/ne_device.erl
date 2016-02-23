@@ -13,7 +13,7 @@
 
 -include("network.hrl").
 %% API
--export([start_link/1]).
+-export([start_link/1, get_all_plugs/1, get_plug/2, update_plug/2, remove_plug/2, add_plug/2, remove_all_plugs/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -26,7 +26,7 @@
 -define(SERVER, ?MODULE).
 
 -record(state, {attr          = #{} :: map(),     %% Attributes of device, KV store
-                plugs         = []  :: list(),    %% list of equipped plugs (contain record #plug)
+                plugs         = []  :: map(),     %% equipped plugs (key: plug id, val: contain record #plug)
                 controlPorts  = []  :: pid(),     %% List of control ports (PIDs), e.g where to send events from event log
                 routingTable  = #{} :: map(),     %% routing table
                 eventLog      = []  :: list(),    %% Log with all events on device, limited list
@@ -90,15 +90,20 @@ handle_call({get_attributes, []}, _From, S) ->
 handle_call({get_attributes, Keys}, _From, S) ->
   {reply, maps:with(Keys,S#state.attr), S};
 
+handle_call({add_plug, P}, _From, S) ->
+  {reply, ok, S#state{plugs = maps:put(P#plug.id, P, S#state.plugs)}};
 
-handle_call({add_plug, _Plug}, _From, State) ->
-  {reply, ok, State};
+handle_call({remove_plugs, []}, _From, S) ->
+  {reply, ok, S#state{plugs = #{}}};
+handle_call({remove_plugs, Keys}, _From, S) ->
+  {reply, ok, S#state{plugs = maps:without(Keys, S#state.plugs)}};
 
-handle_call({remove_plug}, _From, State) ->
-  {reply, ok, State};
 
-handle_call({update_plug}, _From, State) ->
-  {reply, ok, State};
+handle_call({get_plugs, []}, _From, S) ->
+  {reply, S#state.plugs, S};
+handle_call({get_plugs, Keys}, _From, S) ->
+  {reply, maps:with(Keys, S#state.plugs), S};
+
 
 handle_call({register_for_events}, _From, State) ->
   {reply, ok, State};
@@ -177,6 +182,23 @@ code_change(_OldVsn, State, _Extra) ->
   {ok, State}.
 
 %%%===================================================================
+%%% API
+%%%===================================================================
+add_plug(Pid, P) when is_record(P, plug) ->
+  gen_server:call(Pid, {add_plug, P}).
+remove_plug(Pid, P) when is_record(P, plug) ->
+  gen_server:call(Pid, {remove_plugs, [P#plug.id]}).
+remove_all_plugs(Pid) ->
+  gen_server:call(Pid, {remove_plugs, []}).
+update_plug(Pid, P) when is_record(P, plug) ->
+  gen_server:call(Pid, {remove_plugs, [P#plug.id]}),
+  gen_server:call(Pid, {add_plug, P}).
+get_plug(Pid, Id) ->
+  hd(maps:values(gen_server:call(Pid, {get_plugs, [Id]}))).
+get_all_plugs(Pid) ->
+  maps:values(gen_server:call(Pid, {get_plugs, []})).
+
+%%%===================================================================
 %%% Internal functions
 %%%===================================================================
 
@@ -186,7 +208,7 @@ default_plugs() ->
   PlugB = #plug{id = b},
   PlugC = #plug{id = c},
   PlugD = #plug{id = d},
-  [PlugA, PlugB, PlugC, PlugD].
+  #{a => PlugA, b => PlugB, c => PlugC, d =>PlugD}.
 
 %% TODO: Plugs manipulation based on API
 %% TODO: Update README.md
