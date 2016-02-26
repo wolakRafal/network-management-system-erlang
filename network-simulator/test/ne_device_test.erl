@@ -12,7 +12,7 @@
 -include("../src/network.hrl").
 
 %% API
--export([all_tests/0]).
+-export([all_tests/0, event_counter/1]).
 
 -define(Attrs, #{attr1 => "val 1", attr2 => "val 2"}).
 -define(TestAttr, #{attr3 => "val 3"}).
@@ -23,6 +23,7 @@ all_tests() ->
   {ok, NePid} = test_create_ne(),
   ok = test_attributes(NePid),
   ok = test_plugs(NePid),
+  ok = test_event_log(NePid),
   io:format("~~ NE DEVICE UNIT TESTS FINISHED ~n"),
   passed.
 
@@ -58,3 +59,29 @@ test_plugs(NePid) ->
   ok = ne_device:remove_plug(NePid, Plg1),
   [] = ne_device:get_all_plugs(NePid),
   ok.
+
+test_event_log(NePid) ->
+  io:format("#4 Test Event Log ~n"),
+  ne_device:flush_log_event(NePid),
+  EventCounterPid = spawn(ne_device_test, event_counter, [0]),
+  ok = ne_device:subscribe(NePid, EventCounterPid),
+  Plg2 = #plug{id = xcc},
+  ok = ne_device:add_plug(NePid, Plg2), %% This generates Event
+  EventCounterPid ! {self(), how_many_events},
+  receive
+    EventCount ->
+      io:format(" Number of Events ~p ~n", [EventCount]),
+      EventCount = 1 %% One Event Expected
+  end,
+  1 = length(ne_device:get_events(NePid, 0)),
+  ok.
+
+%% test subscriber
+event_counter(EventCount) ->
+  receive
+    {From, how_many_events} ->
+      From ! EventCount;
+    {From, Event} ->
+      io:format(" Receive Event No#~p From ~p: ~p ~n", [EventCount + 1, From, Event]),
+      event_counter(EventCount + 1)
+  end.

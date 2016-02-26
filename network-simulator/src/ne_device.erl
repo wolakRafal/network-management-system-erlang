@@ -14,6 +14,7 @@
 -include("network.hrl").
 %% API
 -export([start_link/1, get_all_plugs/1, get_plug/2, update_plug/2, remove_plug/2, add_plug/2, remove_all_plugs/1]).
+-export([subscribe/2, get_events/2, flush_log_event/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -24,6 +25,7 @@
   code_change/3]).
 
 -define(SERVER, ?MODULE).
+-define(MAX_EVENT_LOG_SIZE, 100).
 
 -record(state, {attr          = #{} :: map(),     %% Attributes of device, KV store
                 plugs         = []  :: map(),     %% equipped plugs (key: plug id, val: contain record #plug)
@@ -91,7 +93,14 @@ handle_call({get_attributes, Keys}, _From, S) ->
   {reply, maps:with(Keys,S#state.attr), S};
 
 handle_call({add_plug, P}, _From, S) ->
-  {reply, ok, S#state{plugs = maps:put(P#plug.id, P, S#state.plugs)}};
+  Event = {S#state.eventLogId, plug_added}, %% Create Event
+
+  lists:foreach(fun(Pid) -> Pid ! {self(), Event} end, S#state.controlPorts), %% Send Event to all subscribers
+
+  {reply, ok, S#state{  plugs = maps:put(P#plug.id, P, S#state.plugs),
+                        eventLog = [Event | S#state.eventLog], %% Update Event Log
+                        eventLogId = (S#state.eventLogId + 1) rem ?MAX_EVENT_LOG_SIZE
+  }};
 
 handle_call({remove_plugs, []}, _From, S) ->
   {reply, ok, S#state{plugs = #{}}};
@@ -104,9 +113,15 @@ handle_call({get_plugs, []}, _From, S) ->
 handle_call({get_plugs, Keys}, _From, S) ->
   {reply, maps:with(Keys, S#state.plugs), S};
 
+%%% Events
+handle_call({get_events, _StartFrom}, _From, S) ->
+  {reply, S#state.eventLog, S};
 
-handle_call({register_for_events}, _From, State) ->
-  {reply, ok, State};
+handle_call({add_subscriber, SubscriberPid}, _From, S) ->
+  {reply, ok, S#state{controlPorts = [SubscriberPid | S#state.controlPorts]}};
+
+handle_call(flush_log_event, _From, S) ->
+  {reply, ok, S#state{eventLog = []}};
 
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
@@ -198,6 +213,20 @@ get_plug(Pid, Id) ->
 get_all_plugs(Pid) ->
   maps:values(gen_server:call(Pid, {get_plugs, []})).
 
+%%% Events
+get_events(Pid, StartFrom) when is_integer(StartFrom) ->
+  gen_server:call(Pid, {get_events, StartFrom});
+get_events(Pid, {Date, Time}) ->
+  gen_server:call(Pid, {get_events, {Date, Time}}).
+
+flush_log_event(Pid) ->
+  gen_server:call(Pid, flush_log_event).
+
+
+subscribe(Pid, SubscriberPid) ->
+  gen_server:call(Pid, {add_subscriber, SubscriberPid}),
+  ok.
+
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
@@ -213,3 +242,5 @@ default_plugs() ->
 %% TODO: Plugs manipulation based on API
 %% TODO: Update README.md
 %% TODO: scripts: automation tests for Mac , and unix
+%% TODO: add a decorator - a function that changes NE state and generates Events on each Change
+%% TODO Model for Event
