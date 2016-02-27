@@ -249,7 +249,7 @@ default_plugs() ->
   PlugD = #plug{id = d},
   #{a => PlugA, b => PlugB, c => PlugC, d =>PlugD}.
 
+%% TODO: add a decorator - a function that changes NE state and generates Events on each Change
 %% TODO: Update README.md
 %% TODO: scripts: automation tests for Mac , and unix
-%% TODO: add a decorator - a function that changes NE state and generates Events on each Change
 %% TODO Model for Event

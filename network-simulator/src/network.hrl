@@ -25,6 +25,13 @@
 %% NE specification - for starting NE child processes
 -record(neSpec, {name, neType}).
 
+%% Event, type
+-record(event, {id,
+                type, % one of {alm, aud}
+                evtInfo,  % #eventInfo
+                timestamp}).
+-record(eventInfo, {name, old_val, new_val}).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%        Messages       %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
