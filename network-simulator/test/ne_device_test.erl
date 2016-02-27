@@ -35,14 +35,14 @@ test_create_ne() ->
 
 test_attributes(NePid) ->
   io:format("#2 Test NE Attributes manipulation ~n"),
-  ok = gen_server:call(NePid, {update_attributes, ?TestAttr}),
+  ok = ne_device:add_attr(NePid, ?TestAttr),
   AllAttrs = maps:merge(?Attrs, ?TestAttr),
-  AllAttrs = gen_server:call(NePid, {get_attributes, []}),
-  #{attr3 := "val 3"} = gen_server:call(NePid, {get_attributes, [attr3]}),
-  ok = gen_server:call(NePid, {replace_attributes, ?TestAttr}),
-  #{attr3 := "val 3"} = gen_server:call(NePid, {get_attributes, [attr3]}),
-  ok = gen_server:call(NePid, {replace_attributes, #{}}),
-  #{} = gen_server:call(NePid, {get_attributes, []}),
+  AllAttrs = ne_device:get_attr(NePid, []),
+  #{attr3 := "val 3"} = ne_device:get_attr(NePid, [attr3]),
+  ok = ne_device:update_attr(NePid, ?TestAttr),
+  #{attr3 := "val 3"} = ne_device:get_attr(NePid, [attr3]),
+  ok = ne_device:update_attr(NePid, #{}),
+  #{} = ne_device:get_attr(NePid, []),
   ok.
 
 test_plugs(NePid) ->

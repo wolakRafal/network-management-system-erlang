@@ -13,7 +13,7 @@
 
 -include("network.hrl").
 %% API
--export([start_link/1, get_all_plugs/1, get_plug/2, update_plug/2, remove_plug/2, add_plug/2, remove_all_plugs/1]).
+-export([start_link/1, get_all_plugs/1, get_plug/2, update_plug/2, remove_plug/2, add_plug/2, remove_all_plugs/1, add_attr/2, get_attr/2, update_attr/2]).
 -export([subscribe/2, get_events/2, flush_log_event/1]).
 
 %% gen_server callbacks
@@ -199,6 +199,16 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% API
 %%%===================================================================
+
+add_attr(Pid, {Key, Value}) ->
+  gen_server:call(Pid, {update_attributes, #{Key => Value}});
+add_attr(Pid, Attrs) when is_map(Attrs) ->
+  gen_server:call(Pid, {update_attributes, Attrs}).
+get_attr(Pid, Keys) ->
+  gen_server:call(Pid, {get_attributes, Keys}).
+update_attr(Pid, AttrMap) ->
+  gen_server:call(Pid, {replace_attributes, AttrMap}).
+
 add_plug(Pid, P) when is_record(P, plug) ->
   gen_server:call(Pid, {add_plug, P}).
 remove_plug(Pid, P) when is_record(P, plug) ->
@@ -239,7 +249,6 @@ default_plugs() ->
   PlugD = #plug{id = d},
   #{a => PlugA, b => PlugB, c => PlugC, d =>PlugD}.
 
-%% TODO: Plugs manipulation based on API
 %% TODO: Update README.md
 %% TODO: scripts: automation tests for Mac , and unix
 %% TODO: add a decorator - a function that changes NE state and generates Events on each Change
