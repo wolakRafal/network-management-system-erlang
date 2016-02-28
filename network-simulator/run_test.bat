@@ -1,2 +1,2 @@
 erl -make
-erl -env ERL_LIBS "." -eval "all_tests:all_tests()."
+erl -env ERL_LIBS "." -eval "eunit:test({application, network})."
