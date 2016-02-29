@@ -16,7 +16,7 @@
 -export([start/2, stop/1]).
 
 %% admin operations
--export([count_children/0]).
+-export([count_children/0, shutdown/0]).
 
 %% Application API
 -export([list_all/0, get/1, add_ne/1, remove_ne/1, stop_ne/1, ne_count/0]).
@@ -103,6 +103,10 @@ remove_ne(NeID) ->
 
 count_children() ->
   supervisor:count_children(?NET_SUP).
+
+%% Gracefully shuts down top level network supervisor - For tests
+shutdown() ->
+  exit(whereis(network_sup), normal).
 
 %%%===================================================================
 %%% Internal functions

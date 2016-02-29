@@ -16,9 +16,14 @@ all equipment inside the device instance is configured (via env attribute).
 erl -make
 
 erl -env ERL_LIBS "."
+
 ```
 1> application:start(network).
 ```
+
+Script for compilation in shell:
+
+```1> file:eval(".compile_all").```
 
 ## Supported Messages (API)
 
