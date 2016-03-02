@@ -11,6 +11,7 @@
 
 -include_lib("eunit/include/eunit.hrl").
 -include("../src/network.hrl").
+-import(network_tests, [setup_network/0]).
 
 -export([event_counter/1]).
 
@@ -19,40 +20,42 @@
 
 
 all_test_() ->
-  io:format("~~ NE DEVICE UNIT TESTS ~n"),
-  {setup,
-    fun create_ne/0,  %% setup function
+%%  io:fwrite(user, "  NE DEVICE UNIT TESTS /n", []),
+  {foreach,
+    fun setup_network_env/0,  %% setup function
     fun cleanup/1,    %% teardown function
-    [ fun attributes_test/1,
-      fun plugs_test/1,
-      fun event_log_test/1
+    [  fun test_attributes/1,
+       fun test_plugs/1 ,
+       fun test_event_log/1
     ]
   }.
 
 
-create_ne() ->
-  io:format("[Setup] Create NE process (gen_serv) ~n"),
+setup_network_env() ->
+  network_tests:setup_network(),
+  io:fwrite(user, "[Setup] Create NE process (gen_serv) \n", []),
   {ok, NePid} = ne_device:start_link(?Attrs),
-  io:format(" Test NE process created: ~p ~n", [NePid]),
+  io:fwrite(user, " Test NE process created: ~p \n", [NePid]),
   NePid.
 
 cleanup(NePid) ->
   exit(NePid, normal).
 
-attributes_test(NePid) ->
-  io:format(" Test NE Attributes manipulation ~n"),
+test_attributes(NePid) ->
+  io:fwrite(user, " Test NE Attributes manipulation \n",[]),
   ?assertEqual(ok, ne_device:add_attr(NePid, ?TestAttr)),
   AllAttrs = maps:merge(?Attrs, ?TestAttr),
-  ?assertEqual(AllAttrs , ne_device:get_attr(NePid, [])),
-  ?assertEqual(#{attr3 => "val 3"}, ne_device:get_attr(NePid, [attr3])),
-  ?assertEqual(ok , ne_device:update_attr(NePid, ?TestAttr)),
-  ?assertEqual(#{attr3 => "val 3"} , ne_device:get_attr(NePid, [attr3])),
-  ?assertEqual(ok , ne_device:update_attr(NePid, #{})),
-  ?assertEqual(#{} , ne_device:get_attr(NePid, [])),
-  ok.
+  [
+    ?_assertEqual(AllAttrs , ne_device:get_attr(NePid, [])),
+    ?_assertEqual(#{attr3 => "val 3"}, ne_device:get_attr(NePid, [attr3])),
+    ?_assertEqual(ok , ne_device:update_attr(NePid, ?TestAttr)),
+    ?_assertEqual(#{attr3 => "val 3"} , ne_device:get_attr(NePid, [attr3])),
+    ?_assertEqual(ok , ne_device:update_attr(NePid, #{})),
+    ?_assertEqual(#{} , ne_device:get_attr(NePid, []))
+  ].
 
-plugs_test(NePid) ->
-  io:format(" Test NE Plugs manipulation ~n"),
+test_plugs(NePid) ->
+  io:fwrite(user, " Test NE Plugs manipulation n",[]),
   ok = ne_device:remove_all_plugs(NePid),
 
   Plg1 = #plug{id = xpf, in = "fake PID", out = ""},
@@ -67,11 +70,10 @@ plugs_test(NePid) ->
 
   ok = ne_device:remove_plug(NePid, Plg2),
   ok = ne_device:remove_plug(NePid, Plg1),
-  ?assertEqual([] , ne_device:get_all_plugs(NePid)),
-  ok.
+  ?_assertEqual([] , ne_device:get_all_plugs(NePid)).
 
-event_log_test(NePid) ->
-  io:format(" Test Event Log ~n"),
+test_event_log(NePid) ->
+  io:fwrite(user, " Test Event Log \n", []),
 %%  ne_device:flush_log_event(NePid),
 
   EventCounterPid = spawn(ne_device_tests, event_counter, [0]),
@@ -81,11 +83,10 @@ event_log_test(NePid) ->
   EventCounterPid ! {self(), how_many_events},
   receive
     EventCount ->
-      io:format(" Number of Events ~p ~n", [EventCount]),
+      io:fwrite(user, " Number of Events ~p \n", [EventCount]),
       EventCount = 1 %% One Event Expected
   end,
-  ?assertEqual(1 , length(ne_device:get_events(NePid, 0))),
-  ok.
+  ?_assertEqual(1 , length(ne_device:get_events(NePid, 0))).
 
 %% test subscriber
 event_counter(EventCount) ->
@@ -93,6 +94,6 @@ event_counter(EventCount) ->
     {From, how_many_events} ->
       From ! EventCount;
     {From, Event} ->
-      io:format(" Receive Event No#~p From ~p: ~p ~n", [EventCount + 1, From, Event]),
+      io:fwrite(user, " Receive Event No#~p From ~p: ~p \n", [EventCount + 1, From, Event]),
       event_counter(EventCount + 1)
   end.

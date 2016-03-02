@@ -14,6 +14,9 @@
 -define(TEST_NE_NAME, "test-ne").
 -define(TEST_NE_ID, list_to_atom(?TEST_NE_NAME)).
 
+-export([setup_network/0]).
+
+-undef(NODEBUG).
 
 all_test_() ->
   { setup,
@@ -36,7 +39,6 @@ setup_network() ->
   ok.
 
 cleanup(_) ->
-  io:fwrite(user, " -------- Cleanup ---------- \n", []),
   network:shutdown().
 
 test_check_network() ->
