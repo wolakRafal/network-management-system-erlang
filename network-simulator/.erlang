@@ -1,0 +1,10 @@
+io:format("executing user profile in .erlang\n",[]).
+io:format("Welcome to Network Simulator Shell. \n",[]).
+
+code:add_path("src/").
+code:add_path("test/").
+code:add_path("ebin/").
+make:all([load]).
+eunit:test(network).
+
+io:format(".erlang rc finished\n",[]).

@@ -20,15 +20,15 @@ all_test_() ->
     fun setup_network/0,
     fun cleanup/1,
     [
-      fun check_network_test/0,
-      fun create_ne_test/0,
-      fun remove_ne_test/0
+      fun test_check_network/0,
+      fun test_create_ne/0,
+      fun test_remove_ne/0
     ]
   }.
 
 %%%%% Setup & cleanup
 setup_network() ->
-  ?debugFmt("~~ SETUP NETWORK [with 2 elements]~~~n"),
+  ?debugMsg(" SETUP NETWORK [with 2 elements] "),
   network:start(normal, [{ne_list, [
     #{ne_name => "default-ne" , ne_type => default},
     #{ne_name => "empty-ne"   , ne_type => empty}
@@ -36,22 +36,22 @@ setup_network() ->
   ok.
 
 cleanup(_) ->
-  io:format(" -------- Cleanup ----------"),
+  io:fwrite(user, " -------- Cleanup ---------- \n", []),
   network:shutdown().
 
-check_network_test() ->
+test_check_network() ->
   ?assertEqual(2 , network:ne_count()),
   ?assertEqual(2 , length(network:list_all())),
   ok.
 
-create_ne_test() ->
+test_create_ne() ->
   {ok, NePid} = network:add_ne(#{ne_name => ?TEST_NE_NAME, ne_type => test_ne_type}),
   ?assert(is_pid(NePid)),
   ok.
 
-remove_ne_test() ->
+test_remove_ne() ->
   ?assertEqual(ok, network:stop_ne(?TEST_NE_ID)),
   ?assertEqual(ok, network:remove_ne(?TEST_NE_ID)),
-  io:format("NE ~w stoped and removed from Network. ~n", [?TEST_NE_ID]),
+  io:fwrite(user, "NE ~w stoped and removed from Network. ~n", [?TEST_NE_ID]),
   ok.
 
