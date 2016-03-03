@@ -82,7 +82,7 @@ get(NeId) ->
 
 %% Add Network Element as a child to This optical network
 %% Takes tuple {NeName:string, NeType:atom()}
-%% return {ok, Child :: child()}
+%% return {ok, ChildPid :: child()}
 %%
 add_ne(NeAttr) ->
   ChildSpec = {list_to_atom(maps:get(ne_name, NeAttr)), {ne_device, start_link, [NeAttr]}, permanent, 2000, worker, [ne_device]},

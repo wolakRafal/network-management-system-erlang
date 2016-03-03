@@ -10,7 +10,7 @@
 -author("Rafal Wolak").
 
 -include_lib("eunit/include/eunit.hrl").
--include("../src/network.hrl").
+-include("../include/network.hrl").
 -import(network_tests, [setup_network/0]).
 
 -export([event_counter/1]).
@@ -88,6 +88,8 @@ test_event_log(NePid) ->
   end,
   ?_assertEqual(1 , length(ne_device:get_events(NePid, 0))).
 
+
+
 %% test subscriber
 event_counter(EventCount) ->
   receive
@@ -97,3 +99,4 @@ event_counter(EventCount) ->
       io:fwrite(user, " Receive Event No#~p From ~p: ~p \n", [EventCount + 1, From, Event]),
       event_counter(EventCount + 1)
   end.
+
