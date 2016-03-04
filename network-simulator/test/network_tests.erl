@@ -63,9 +63,8 @@ test_send_message_2_nodes() ->
   NE_A = network:add_ne(#{ne_name => "NE A", ne_type => neType}),
   NE_B = network:add_ne(#{ne_name => "NE B", ne_type => neType}),
   Probe = spawn(fun () ->
-
                   receive
-                    get_message
+                    get_message ->
                   end,
   % 2. create 2 Plugs in each NE: PL_A_1, PL_A_2, PL_B_1, PL_B_2
   % 3. Link PL_A_1 and PL_B_1
