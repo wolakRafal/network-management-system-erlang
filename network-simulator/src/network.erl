@@ -69,6 +69,10 @@ stop(_State) ->
 %%% API for tests and CLI
 %%%===================================================================
 
+%% List all NEs (children) under network supervisor
+%%
+%% Returns a newly created list with information about all child specifications
+%% and child processes belonging to the supervisor SupRef.
 list_all() ->
   supervisor:which_children(?NET_SUP).
 
