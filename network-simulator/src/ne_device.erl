@@ -31,7 +31,7 @@
 -define(MAX_EVENT_LOG_SIZE, 100).
 
 -record(state, {
-                equipment     =
+                equipment                   ,
                 attr          = #{} :: map(),     %% Attributes of device, KV store
                 plugs         = []  :: map(),     %% equipped plugs (key: plug id, val: contain record #plug)
                 controlPorts  = []  :: pid(),     %% List of control ports (PIDs), e.g where to send events from event log
