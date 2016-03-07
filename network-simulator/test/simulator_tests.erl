@@ -32,6 +32,7 @@ start_stop_preset_test() ->
 single_network_element_CRUD_test() ->
   {
     "Single Network Element process can be added, retreived, updated stopped and removed from network"
+
   }.
 
 bulk_add_network_elements_test() ->
@@ -113,3 +114,7 @@ is_configured() ->
 %%%%%%%%%%%%%%%%%%%%%%%%
 %%% HELPER FUNCTIONS %%%
 %%%%%%%%%%%%%%%%%%%%%%%%
+
+%% returns ne configuration to create NE process
+create_NE() ->
+  {}.

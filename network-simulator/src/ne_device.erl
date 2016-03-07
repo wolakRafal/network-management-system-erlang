@@ -12,8 +12,11 @@
 -behaviour(gen_server).
 
 -include("network.hrl").
+-import(equipment,[]).
+
 %% API
--export([start_link/1, get_all_plugs/1, get_plug/2, update_plug/2, remove_plug/2, add_plug/2, remove_all_plugs/1, add_attr/2, get_attr/2, update_attr/2]).
+-export([start_link/1, get_all_plugs/1, get_plug/2, update_plug/2, remove_plug/2, add_plug/2, remove_all_plugs/1,
+  add_attr/2, get_attr/2, update_attr/2]).
 -export([subscribe/2, get_events/2, flush_log_event/1]).
 
 %% gen_server callbacks
@@ -27,7 +30,9 @@
 -define(SERVER, ?MODULE).
 -define(MAX_EVENT_LOG_SIZE, 100).
 
--record(state, {attr          = #{} :: map(),     %% Attributes of device, KV store
+-record(state, {
+                equipment     =
+                attr          = #{} :: map(),     %% Attributes of device, KV store
                 plugs         = []  :: map(),     %% equipped plugs (key: plug id, val: contain record #plug)
                 controlPorts  = []  :: pid(),     %% List of control ports (PIDs), e.g where to send events from event log
                 routingTable  = #{} :: map(),     %% routing table
