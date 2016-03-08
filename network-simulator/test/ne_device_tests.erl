@@ -13,7 +13,7 @@
 -include("../include/network.hrl").
 -import(network_tests, [setup_network/0]).
 
--export([event_counter/1]).
+-export([event_counter/1, test_attributes/1]).
 
 -define(Attrs, #{attr1 => "val 1", attr2 => "val 2"}).
 -define(TestAttr, #{attr3 => "val 3"}).

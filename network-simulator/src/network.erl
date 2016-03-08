@@ -98,6 +98,9 @@ stop_ne(NeID) ->
 
 %% Permanently removes NE device form network
 %% return ok.
+remove_ne(Pid) when is_pid(Pid) ->
+  supervisor:terminate_child(?NET_SUP, Pid);
+
 remove_ne(NeID) ->
   supervisor:delete_child(?NET_SUP, NeID).
 

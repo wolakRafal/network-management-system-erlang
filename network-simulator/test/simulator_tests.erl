@@ -10,6 +10,7 @@
 -author("Rafal Wolak").
 
 -include_lib("eunit/include/eunit.hrl").
+-include("network.hrl").
 
 -define(setup(F), {setup, fun start/0, fun stop/1, F}).
 -define(APP_NAME, optical_network).
@@ -26,13 +27,19 @@ start_stop_test() ->
 start_stop_preset_test() ->
   {
     "The simulated optical network can be started with preset configuration of Network Elements (in network.app)",
-    fun is_configured/0
+    ?setup(fun is_configured/0)
   }.
 
 single_network_element_CRUD_test() ->
   {
-    "Single Network Element process can be added, retreived, updated stopped and removed from network"
-
+    "Network should support CRUD operations on NEs",
+    ?setup(
+      [
+        {"Single Network Element process can be added, retreived, updated stopped and removed from network",
+          {setup, fun create_NE/0, fun remove_NE/1, [fun get_NE/1, fun update_NE/1]}
+        }
+      ]
+    )
   }.
 
 bulk_add_network_elements_test() ->
@@ -102,7 +109,7 @@ stop(_) ->
 %%% ACTUAL TESTS %%%
 %%%%%%%%%%%%%%%%%%%%
 is_registered(Pid)  ->
-  [ ?_assert(erlang:is_process_alive(Pid)),
+  [ ?_assertNot(erlang:is_process_alive(Pid)),
     ?_assertEqual(Pid, whereis(?APP_NAME))].
 
 is_configured() ->
@@ -115,6 +122,19 @@ is_configured() ->
 %%% HELPER FUNCTIONS %%%
 %%%%%%%%%%%%%%%%%%%%%%%%
 
-%% returns ne configuration to create NE process
+%% Creates The simplest NE instance
 create_NE() ->
-  {}.
+  {ok, Pid} = network:add_ne(#state{attr = #{ne_name => "Test NE"}}),
+  Pid.
+
+remove_NE(Pid) ->
+  ok = network:remove_ne(Pid),
+  ok.
+
+get_NE(Pid) ->
+  {ok, List} = network:get(Pid),
+  ?_assertEqual(1, size(List)).
+
+update_NE(NePid) ->
+  ne_device_tests:test_attributes(NePid).
+

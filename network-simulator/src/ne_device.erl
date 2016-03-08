@@ -30,16 +30,6 @@
 -define(SERVER, ?MODULE).
 -define(MAX_EVENT_LOG_SIZE, 100).
 
--record(state, {
-                equipment                   ,
-                attr          = #{} :: map(),     %% Attributes of device, KV store
-                plugs         = []  :: map(),     %% equipped plugs (key: plug id, val: contain record #plug)
-                controlPorts  = []  :: pid(),     %% List of control ports (PIDs), e.g where to send events from event log
-                routingTable  = #{} :: map(),     %% routing table
-                eventLog      = []  :: list(),    %% Log with all events on device, limited list
-                eventLogId    = 0   :: integer()  %% Last Event Log Id
-}).
-
 %%%===================================================================
 %%% API
 %%%===================================================================
@@ -73,9 +63,9 @@ start_link(Args) ->
 -spec(init(InitState :: term()) ->
   {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term()} | ignore).
-init(InitState) ->
-  io:format("Ne Device Started: ~p~n", [InitState]),
-  {ok, #state{attr = InitState, plugs = default_plugs()}}.
+init(InitState) -> %% when is_record(InitState, state)
+  io:format("Ne Device Started with initial state: ~p~n", [InitState]),
+  {ok, InitState}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -247,12 +237,12 @@ subscribe(Pid, SubscriberPid) ->
 %%%===================================================================
 
 %% default list of plugs A, B, C, D
-default_plugs() ->
-  PlugA = #plug{id = a},
-  PlugB = #plug{id = b},
-  PlugC = #plug{id = c},
-  PlugD = #plug{id = d},
-  #{a => PlugA, b => PlugB, c => PlugC, d =>PlugD}.
+%%default_plugs() ->
+%%  PlugA = #plug{id = a},
+%%  PlugB = #plug{id = b},
+%%  PlugC = #plug{id = c},
+%%  PlugD = #plug{id = d},
+%%  #{a => PlugA, b => PlugB, c => PlugC, d =>PlugD}.
 
 %% TODO: add a decorator - a function that changes NE state and generates Events on each Change
 %% TODO: Update README.md
