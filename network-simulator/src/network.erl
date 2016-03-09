@@ -89,9 +89,11 @@ get(NeId) ->
 %% Takes tuple {NeName:string, NeType:atom()}
 %% return {ok, ChildPid :: child()}
 %%
+add_ne(InitStateList) when is_list(InitStateList) ->
+  [supervisor:start_child(?NET_SUP, create_ne_child_spec(InitState)) || InitState <- InitStateList];
+
 add_ne(InitState) ->
-  ChildSpec = {list_to_atom(maps:get(ne_name, InitState#state.attr)), {ne_device, start_link, [InitState]}, permanent, 2000, worker, [ne_device]},
-  supervisor:start_child(?NET_SUP, ChildSpec).
+  supervisor:start_child(?NET_SUP, create_ne_child_spec(InitState)).
 
 %% stop NE device
 stop_ne(NeID) ->
@@ -120,3 +122,7 @@ shutdown() ->
 %%% Internal functions
 %%%===================================================================
 
+
+%% creates Child Specification for creation NE process by supervisor - for one_for_one_strategy
+create_ne_child_spec(InitState) ->
+  {list_to_atom(maps:get(ne_name, InitState#state.attr)), {ne_device, start_link, [InitState]}, permanent, 2000, worker, [ne_device]}.

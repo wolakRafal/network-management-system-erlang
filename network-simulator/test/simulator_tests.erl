@@ -14,6 +14,7 @@
 
 -define(setup(F), {setup, fun start/0, fun stop/1, F}).
 -define(APP_NAME, optical_network).
+-define(BULK_SIZE, 100).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% TESTS DESCRIPTIONS %%%
@@ -36,7 +37,7 @@ single_network_element_CRUD_test() ->
     ?setup(
       [
         {"Single Network Element process can be added, retreived, updated stopped and removed from network",
-          {setup, fun create_NE/0, fun remove_NE/1, [fun get_NE/1, fun update_NE/1]}
+          {setup, fun add_NE/0, fun remove_NE/1, [fun get_NE/1, fun update_NE/1]}
         }
       ]
     )
@@ -44,7 +45,8 @@ single_network_element_CRUD_test() ->
 
 bulk_add_network_elements_test() ->
   {
-    "Many (1000) Network Element processes can be added to network"
+    "Many (1000) Network Element processes can be added to network",
+    ?setup(fun add_bulk/0)
   }.
 
 
@@ -117,14 +119,28 @@ is_configured() ->
     ?_assertEqual(2, network:count_children())
   ].
 
+add_bulk() ->
+  [
+    ?_assertNo(network:add_ne(generate_NEs(?BULK_SIZE))),
+    ?_assertEqual(?BULK_SIZE, network:list_all())
+  ].
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %%% HELPER FUNCTIONS %%%
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Creates The simplest NE instance
-create_NE() ->
-  {ok, Pid} = network:add_ne(#state{attr = #{ne_name => "Test NE"}}),
+create_NE()->
+  #state{attr = #{ne_name => "Test NE"}}.
+
+create_NE(NeName)->
+  #state{attr = #{ne_name => NeName}}.
+
+generate_NEs(N) ->
+  [create_NE("ne_process_" ++ integer_to_list(No)) || No <- lists:seq(1, N)].
+
+add_NE() ->
+  {ok, Pid} = network:add_ne(create_NE()),
   Pid.
 
 remove_NE(Pid) ->
