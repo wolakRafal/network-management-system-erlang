@@ -101,9 +101,13 @@ stop_ne(NeID) ->
 
 %% Permanently removes NE device form network
 %% return ok.
+
+%% this is called if 'simple_one_for_one' strategy is used
 remove_ne(Pid) when is_pid(Pid) ->
   supervisor:terminate_child(?NET_SUP, Pid);
 
+%% this is called if not 'simple_one_for_one' strategy is used
+%% NeId must be childId == ne_name
 remove_ne(NeID) ->
   supervisor:delete_child(?NET_SUP, NeID).
 

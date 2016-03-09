@@ -12,38 +12,40 @@
 -include_lib("eunit/include/eunit.hrl").
 -include("network.hrl").
 
+-define(NE_NAME, "test_ne_name").
 -define(setup(F), {setup, fun start/0, fun stop/1, F}).
--define(APP_NAME, optical_network).
+-define(APP_NAME, network).
+-define(REG_NAME, network_sup).
 -define(BULK_SIZE, 100).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% TESTS DESCRIPTIONS %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-start_stop_test() ->
+start_stop_test_() ->
   {
     "The simulated optical network can be started, stopped and should have a registered name: optical_network ",
     ?setup(fun is_registered/1)
   }.
 
-start_stop_preset_test() ->
+start_stop_preset_test_() ->
   {
     "The simulated optical network can be started with preset configuration of Network Elements (in network.app)",
     ?setup(fun is_configured/0)
   }.
 
-single_network_element_CRUD_test() ->
-  {
-    "Network should support CRUD operations on NEs",
-    ?setup(
-      [
-        {"Single Network Element process can be added, retreived, updated stopped and removed from network",
-          {setup, fun add_NE/0, fun remove_NE/1, [fun get_NE/1, fun update_NE/1]}
-        }
-      ]
-    )
+single_network_element_CRUD_test_() ->
+  { "Network should support CRUD operations on NEs",
+    {setup,
+      fun start/0,
+      fun stop/1,
+      fun (_SetupData) ->
+          { "Single Network Element process can be added, retreived, updated stopped and removed from network",
+            {setup, fun add_NE/0, fun remove_NE/1, [fun get_NE/1, fun update_NE/1]}
+          }
+        end }
   }.
 
-bulk_add_network_elements_test() ->
+bulk_add_network_elements_test_() ->
   {
     "Many (1000) Network Element processes can be added to network",
     ?setup(fun add_bulk/0)
@@ -102,7 +104,7 @@ audit_event_test() ->
 %%%%%%%%%%%%%%%%%%%%%%%
 start() ->
   ok = application:start(?APP_NAME),
-  whereis(?APP_NAME).
+  whereis(?REG_NAME).
 
 stop(_) ->
   application:stop(?APP_NAME).
@@ -111,8 +113,8 @@ stop(_) ->
 %%% ACTUAL TESTS %%%
 %%%%%%%%%%%%%%%%%%%%
 is_registered(Pid)  ->
-  [ ?_assertNot(erlang:is_process_alive(Pid)),
-    ?_assertEqual(Pid, whereis(?APP_NAME))].
+  [ ?_assert(erlang:is_process_alive(Pid)),
+    ?_assertEqual(Pid, whereis(?REG_NAME))].
 
 is_configured() ->
   [
@@ -121,7 +123,7 @@ is_configured() ->
 
 add_bulk() ->
   [
-    ?_assertNo(network:add_ne(generate_NEs(?BULK_SIZE))),
+    ?_assertNotException(error, function_clause, network:add_ne(generate_NEs(?BULK_SIZE))),
     ?_assertEqual(?BULK_SIZE, network:list_all())
   ].
 
@@ -130,9 +132,6 @@ add_bulk() ->
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Creates The simplest NE instance
-create_NE()->
-  #state{attr = #{ne_name => "Test NE"}}.
-
 create_NE(NeName)->
   #state{attr = #{ne_name => NeName}}.
 
@@ -140,11 +139,12 @@ generate_NEs(N) ->
   [create_NE("ne_process_" ++ integer_to_list(No)) || No <- lists:seq(1, N)].
 
 add_NE() ->
-  {ok, Pid} = network:add_ne(create_NE()),
-  Pid.
+  {ok, _Pid} = network:add_ne(create_NE(?NE_NAME)),
+  list_to_atom(?NE_NAME).
 
-remove_NE(Pid) ->
-  ok = network:remove_ne(Pid),
+remove_NE(ChildId) ->
+  ok = network:stop_ne(ChildId),
+  ok = network:remove_ne(ChildId),
   ok.
 
 get_NE(Pid) ->
