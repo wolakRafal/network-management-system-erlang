@@ -25,7 +25,7 @@ all_test_() ->
     fun setup_network_env/0,  %% setup function
     fun cleanup/1,    %% teardown function
     [  fun test_attributes/1,
-       fun test_plugs/1 ,
+       fun test_plugs/1,
        fun test_event_log/1
     ]
   }.
@@ -34,7 +34,7 @@ all_test_() ->
 setup_network_env() ->
   network_tests:setup_network(),
   io:fwrite(user, "[Setup] Create NE process (gen_serv) \n", []),
-  {ok, NePid} = ne_device:start_link(?Attrs),
+  {ok, NePid} = ne_device:start_link(#state{attr = ?Attrs}),
   io:fwrite(user, " Test NE process created: ~p \n", [NePid]),
   NePid.
 
@@ -78,7 +78,7 @@ test_event_log(NePid) ->
 
   EventCounterPid = spawn(ne_device_tests, event_counter, [0]),
   ok = ne_device:subscribe(NePid, EventCounterPid),
-  Plg2 = #plug{id = xcc},
+  Plg2 = #plug{id = xcf},
   ok = ne_device:add_plug(NePid, Plg2), %% This generates Event
   EventCounterPid ! {self(), how_many_events},
   receive

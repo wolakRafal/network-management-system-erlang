@@ -34,8 +34,8 @@ all_test_() ->
 setup_network() ->
   ?debugMsg(" SETUP NETWORK [with 2 elements] "),
   network:start(normal, [{ne_list, [
-    #{ne_name => "default-ne" , ne_type => default},
-    #{ne_name => "empty-ne"   , ne_type => empty}
+    #state{attr =  #{ne_name => "default-ne" , ne_type => default}},
+    #state{attr = #{ne_name => "empty-ne"   , ne_type => empty}}
   ]}]),
   ok.
 
@@ -48,7 +48,7 @@ test_check_network() ->
   ok.
 
 test_create_ne() ->
-  {ok, NePid} = network:add_ne(#{ne_name => ?TEST_NE_NAME, ne_type => test_ne_type}),
+  {ok, NePid} = network:add_ne(#state{attr = #{ne_name => ?TEST_NE_NAME, ne_type => test_ne_type}}),
   ?assert(is_pid(NePid)),
   ok.
 
@@ -60,8 +60,8 @@ test_remove_ne() ->
 
 test_send_message_2_nodes() ->
   % 1. create 2 NEs: NE_A & NE_B
-  NE_A = network:add_ne(#{ne_name => "NE A", ne_type => neType}),
-  NE_B = network:add_ne(#{ne_name => "NE B", ne_type => neType}),
+  NE_A = network:add_ne(#state{attr =  #{ne_name => "NE A", ne_type => neType}}),
+  NE_B = network:add_ne(#state{attr =  #{ne_name => "NE B", ne_type => neType}}),
   Probe = self(), %% TODO finish probe implementation
 %%  Probe = spawn(fun () ->
 %%                  receive

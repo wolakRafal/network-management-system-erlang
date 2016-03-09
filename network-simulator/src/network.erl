@@ -11,6 +11,7 @@
 -author("Rafal Wolak").
 
 -behaviour(application).
+-include("network.hrl").
 
 %% Application callbacks
 -export([start/2, stop/1]).
@@ -88,8 +89,8 @@ get(NeId) ->
 %% Takes tuple {NeName:string, NeType:atom()}
 %% return {ok, ChildPid :: child()}
 %%
-add_ne(NeAttr) ->
-  ChildSpec = {list_to_atom(maps:get(ne_name, NeAttr)), {ne_device, start_link, [NeAttr]}, permanent, 2000, worker, [ne_device]},
+add_ne(InitState) ->
+  ChildSpec = {list_to_atom(maps:get(ne_name, InitState#state.attr)), {ne_device, start_link, [InitState]}, permanent, 2000, worker, [ne_device]},
   supervisor:start_child(?NET_SUP, ChildSpec).
 
 %% stop NE device
