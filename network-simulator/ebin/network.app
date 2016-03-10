@@ -17,11 +17,7 @@
   {mod, {network, [
     %% { management_domain, md1},
     %% ne record { ne_name, ne_type,
-    { ne_list, [
-%%      #state{attr = #{ne_name => "default-ne" , ne_type => default}},
-%%      #state{attr = #{ne_name => "empty-ne"   , ne_type => empty}}
-                ]
-    }
+    {ne_list, []} %% change to file location with preset NE configurations
   ]}},
   %% here will go defaults (static caps)
   {env, [ ]}

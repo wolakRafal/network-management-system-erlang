@@ -139,12 +139,12 @@ generate_NEs(N) ->
   [create_NE("ne_process_" ++ integer_to_list(No)) || No <- lists:seq(1, N)].
 
 add_NE() ->
-  {ok, _Pid} = network:add_ne(create_NE(?NE_NAME)),
-  list_to_atom(?NE_NAME).
+  {ok, Pid} = network:add_ne(create_NE(?NE_NAME)),
+  Pid.
 
-remove_NE(ChildId) ->
-  ok = network:stop_ne(ChildId),
-  ok = network:remove_ne(ChildId),
+remove_NE(NePid) ->
+%%  ok = network:stop_ne(NePid), TODO stoping NE?
+  ok = network:remove_ne(NePid),
   ok.
 
 get_NE(Pid) ->

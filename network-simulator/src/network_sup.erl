@@ -56,26 +56,28 @@ start_link(StartArgs) ->
   }} |
   ignore |
   {error, Reason :: term()}).
-init([{ne_list, NeList}]) ->
-  RestartStrategy = one_for_one, %%  a simplified one_for_one supervisor, where all child processes
-                                        %% are dynamically added instances of the same process type,
-                                        %%  i.e. running the same code.
+init([{ne_list, _NeList}]) ->
+        %%  a simplified one_for_one supervisor, where all child processes
+        %% are dynamically added instances of the same process type,
+        %%  i.e. running the same code.
   MaxRestarts = 3,
   MaxSecondsBetweenRestarts = 1,
 
-  SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
+  SupFlags = #{ strategy => simple_one_for_one,
+                intensity => MaxRestarts,
+                period => MaxSecondsBetweenRestarts},
 
-  Restart = permanent, %% a transient child process will be restarted only if it terminates abnormally,
-                       %% i.e. with another exit reason than normal, shutdown or {shutdown,Term}
-                       %% We do not restart of ne device
-                       %% it should be handled by operators/administrators manually
-  Shutdown = 2000,     % waits 2 sec for children exit signal with reason 'shutdown'
-  Type = worker,
+%%    When started, the supervisor does not start any child processes. Instead, all child processes are added dynamically by calling:
+%%      1> supervisor:start_child(Sup, List)
 
-  ChildSpecs = lists:map( fun(NEAttr) ->
-                            {list_to_atom(maps:get(ne_name,NEAttr#state.attr)), {ne_device, start_link, [NEAttr]}, Restart, Shutdown, Type, [ne_device]}
-                          end,
-                          NeList),
+  %% We do not restart ne device
+  %% it should be handled by operators/administrators manually or by Network Management System (NMS)
+  ChildSpecs = [#{  id => ne_device,
+                    start => {ne_device, start_link, []},
+                    restart => transient,  %% child process is restarted only if it terminates abnormally,
+                                          %%      that is, with another exit reason than normal, shutdown, or {shutdown,Term}.
+                    shutdown => brutal_kill   %% child process is unconditionally terminated using exit(Child, kill).
+    }],
 
   {ok, {SupFlags, ChildSpecs}}.
 

@@ -90,26 +90,20 @@ get(NeId) ->
 %% return {ok, ChildPid :: child()}
 %%
 add_ne(InitStateList) when is_list(InitStateList) ->
-  [supervisor:start_child(?NET_SUP, create_ne_child_spec(InitState)) || InitState <- InitStateList];
+  [supervisor:start_child(?NET_SUP, [InitState]) || InitState <- InitStateList];
 
 add_ne(InitState) ->
-  supervisor:start_child(?NET_SUP, create_ne_child_spec(InitState)).
+  supervisor:start_child(?NET_SUP, [InitState]).
 
-%% stop NE device
-stop_ne(NeID) ->
-  supervisor:terminate_child(?NET_SUP, NeID).
+%% stop NE device, TODO this terminates child
+stop_ne(NePid) ->
+  supervisor:terminate_child(?NET_SUP, NePid).
 
 %% Permanently removes NE device form network
 %% return ok.
-
 %% this is called if 'simple_one_for_one' strategy is used
 remove_ne(Pid) when is_pid(Pid) ->
-  supervisor:terminate_child(?NET_SUP, Pid);
-
-%% this is called if not 'simple_one_for_one' strategy is used
-%% NeId must be childId == ne_name
-remove_ne(NeID) ->
-  supervisor:delete_child(?NET_SUP, NeID).
+  supervisor:terminate_child(?NET_SUP, Pid).
 
 %%%===================================================================
 %%% Admin functions, for diagnosis and maintenance
@@ -125,8 +119,3 @@ shutdown() ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
-
-%% creates Child Specification for creation NE process by supervisor - for one_for_one_strategy
-create_ne_child_spec(InitState) ->
-  {list_to_atom(maps:get(ne_name, InitState#state.attr)), {ne_device, start_link, [InitState]}, permanent, 2000, worker, [ne_device]}.
