@@ -34,7 +34,6 @@ all_test_() ->
 
 %%%%% Setup & cleanup
 setup_network() ->
-  ?debugMsg(" SETUP NETWORK [with 2 elements] "),
   network:start(normal, [{ne_list, [ ]}]),
   ok.
 

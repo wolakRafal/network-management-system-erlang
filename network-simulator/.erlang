@@ -7,6 +7,6 @@ code:add_path("ebin/").
 make:all([load]).
 
 io:format("Executing Unit tests. \n\n",[]).
-eunit:test([network,ne_device]).
+%% eunit:test(all_tests,[verbose]).
 
-io:format("Run eunit:test([network,ne_device]). to Execute All Tests  \n",[]).
+io:format("Run eunit:test([all_tests]). to Execute All Tests  \n",[]).

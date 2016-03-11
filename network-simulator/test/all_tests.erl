@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 04. Mar 2016 17:12
 %%%-------------------------------------------------------------------
--module(simulator_tests).
+-module(all_tests).
 -author("Rafal Wolak").
 
 -include_lib("eunit/include/eunit.hrl").
@@ -17,6 +17,19 @@
 -define(APP_NAME, network).
 -define(REG_NAME, network_sup).
 -define(BULK_SIZE, 100).
+%% Adding NE process Performance.
+%% Test Starts network , add N == ?BULK_SIZE Processes, remove all process and stop network process.
+%%
+%% Performance on DELL LATITUDE E6530 - 11/03/2016: 8 Cores i7-3740QM CPU 2,70 GHz (16 GB RAM but free ~2GB)
+%%                                                  N = 100  [done in 0.047 s]
+%%                                                  N = 1'000 [done in 0.140 s]
+%%                                                  N = 10'000 [done in 0.890 s] without logging all_tests: bulk_remove_network_elements_test_...[0.187 s] ok
+%%                                                  N = 100'000 without logging all_tests: bulk_remove_network_elements_test_...[2.231 s] ok
+%%                                                  N = 1'000'000 CRASHES! ->
+%%                                Crash dump is being written to: erl_crash.dump...done
+%%                                eheap_alloc: Cannot allocate 529782288 bytes of memory (of type "heap").
+%%
+%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% TESTS DESCRIPTIONS %%%
@@ -38,11 +51,12 @@ single_network_element_CRUD_test_() ->
     {setup,
       fun start/0,
       fun stop/1,
-      fun (_SetupData) ->
+      fun () ->
           { "Single Network Element process can be added, retreived, updated stopped and removed from network",
             {setup, fun add_NE/0, fun remove_NE/1, [fun get_NE/1, fun update_NE/1]}
           }
-        end }
+        end
+    }
   }.
 
 bulk_add_network_elements_test_() ->
@@ -51,15 +65,10 @@ bulk_add_network_elements_test_() ->
     ?setup(fun add_bulk/0)
   }.
 
-
-stop_add_start_network_elements_test() ->
+bulk_remove_network_elements_test_() ->
   {
-    "Many (1000) Network Element processes can be stopped and started again"
-  }.
-
-bulk_remove_network_elements_test() ->
-  {
-    "Many (1000) Network Element processes can be removed by one call"
+    "Many (1000) Network Element processes can be removed by one call",
+    ?setup({timeout, 10*60, fun remove_bulk/0})
   }.
 
 equipment_configuration_test() ->
@@ -118,13 +127,22 @@ is_registered(Pid)  ->
 
 is_configured() ->
   [
-    ?_assertEqual(2, network:count_children())
+    ?_assertEqual(0, network:count_ne())
   ].
 
 add_bulk() ->
   [
     ?_assertNotException(error, function_clause, network:add_ne(generate_NEs(?BULK_SIZE))),
-    ?_assertEqual(?BULK_SIZE, network:list_all())
+    ?_assertEqual(?BULK_SIZE, network:count_ne())
+  ].
+
+remove_bulk() ->
+  NePids = lists:map(fun({ok, Pid}) -> Pid end, network:add_ne(generate_NEs(?BULK_SIZE))),
+  [
+    ?_assertEqual(ok, network:remove_ne(hd(NePids))),
+    ?_assertEqual(?BULK_SIZE - 2, network:count_ne()),
+    ?_assertEqual(ok, network:remove_ne(NePids)),
+    ?_assertEqual(0, network:count_ne())
   ].
 
 %%%%%%%%%%%%%%%%%%%%%%%%

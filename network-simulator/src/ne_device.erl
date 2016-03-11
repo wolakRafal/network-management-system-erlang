@@ -64,7 +64,7 @@ start_link(Args) ->
   {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term()} | ignore).
 init(InitState) when is_record(InitState, state) ->
-  io:format("Ne Device Started with initial state: ~p~n", [InitState]),
+%%  io:format("Ne Device Started : ~p~n", [InitState]),
   {ok, #state{
     attr = InitState#state.attr}}.
 
