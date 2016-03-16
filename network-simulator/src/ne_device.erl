@@ -66,6 +66,7 @@ start_link(Args) ->
 init(InitState) when is_record(InitState, state) ->
 %%  io:format("Ne Device Started : ~p~n", [InitState]),
   {ok, #state{
+    equipment = InitState#state.equipment,
     attr = InitState#state.attr}}.
 
 %%--------------------------------------------------------------------

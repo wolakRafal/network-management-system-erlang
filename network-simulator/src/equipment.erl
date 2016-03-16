@@ -9,7 +9,9 @@
 -module(equipment).
 -author("Rafal Wolak").
 
-%% Data structure for Equipment Tree representation.
+-import(dict,[new/0]).
+
+%% Data structure for Equipment element representation.
 %% It is a Directory structure like LDAP
 %% ================
 %%
@@ -17,11 +19,4 @@
 %% API
 -export([]).
 
--define(node, {
-                parent,
-                id,
-                type,
-                attributes,
-                children
-              }).
 

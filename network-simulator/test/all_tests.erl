@@ -17,6 +17,14 @@
 -define(APP_NAME, network).
 -define(REG_NAME, network_sup).
 -define(BULK_SIZE, 100).
+
+%% Equipment test data
+-define(EQUIPMENT_EMPTY, dict:from_list(
+  [ "/mit/me", #eqp{id = "/mit/me", parent = "/mit", children = ["/mit/me/1", "/mit/me/2"]},
+    "/mit/me/1" #eqp{id = "/mit/me/1", parent = "/mit/me", children = []},
+    "/mit/me/2" #eqp{id = "/mit/me/2", parent = "/mit/me", children = []}
+  ])).
+
 %% Adding NE process Performance.
 %% Test Starts network , add N == ?BULK_SIZE Processes, remove all process and stop network process.
 %%
@@ -71,9 +79,11 @@ bulk_remove_network_elements_test_() ->
     ?setup({timeout, 10*60, fun remove_bulk/0})
   }.
 
-equipment_configuration_test() ->
+equipment_configuration_test_() ->
   {
-    "NE can be created with any (possibly empty) Equipment configuration. Eqp should have directory structure (tree)"
+    "NE can be created with any (possibly empty) Equipment configuration. Eqp should have directory structure (tree)",
+    ?setup([fun create_ne_empty_equipment/0])
+%%    , fun create_ne_with_eqipment/0
   }.
 
 get_ne_by_uri_test() ->
@@ -130,32 +140,6 @@ is_configured() ->
     ?_assertEqual(0, network:count_ne())
   ].
 
-add_bulk() ->
-  [
-    ?_assertNotException(error, function_clause, network:add_ne(generate_NEs(?BULK_SIZE))),
-    ?_assertEqual(?BULK_SIZE, network:count_ne())
-  ].
-
-remove_bulk() ->
-  NePids = lists:map(fun({ok, Pid}) -> Pid end, network:add_ne(generate_NEs(?BULK_SIZE))),
-  [
-    ?_assertEqual(ok, network:remove_ne(hd(NePids))),
-    ?_assertEqual(?BULK_SIZE - 2, network:count_ne()),
-    ?_assertEqual(ok, network:remove_ne(NePids)),
-    ?_assertEqual(0, network:count_ne())
-  ].
-
-%%%%%%%%%%%%%%%%%%%%%%%%
-%%% HELPER FUNCTIONS %%%
-%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Creates The simplest NE instance
-create_NE(NeName)->
-  #state{attr = #{ne_name => NeName}}.
-
-generate_NEs(N) ->
-  [create_NE("ne_process_" ++ integer_to_list(No)) || No <- lists:seq(1, N)].
-
 add_NE() ->
   {ok, Pid} = network:add_ne(create_NE(?NE_NAME)),
   Pid.
@@ -171,4 +155,45 @@ get_NE(Pid) ->
 
 update_NE(NePid) ->
   ne_device_tests:test_attributes(NePid).
+
+add_bulk() ->
+  [
+    ?_assertNotException(error, function_clause, network:add_ne(generate_NEs(?BULK_SIZE))),
+    ?_assertEqual(?BULK_SIZE, network:count_ne())
+  ].
+
+remove_bulk() ->
+  NePids = lists:map(fun({ok, Pid}) -> Pid end, network:add_ne(generate_NEs(?BULK_SIZE))),
+  [
+    ?_assertEqual(ok, network:remove_ne(hd(NePids))),
+    ?_assertEqual(?BULK_SIZE - 2, network:count_ne()),
+    ?_assertEqual(ok, network:remove_ne(NePids)),
+    ?_assertEqual(0, network:count_ne())
+  ].
+
+create_ne_empty_equipment() ->
+  {ok, Pid} = network:add_ne(create_ne_with_eq("Test_NE_Empty_Eqp", ?EQUIPMENT_EMPTY)),
+  NeState = network:get_ne(Pid),
+  [
+    ?_assert(is_record(NeState, state)),
+    ?_assertEqual(?EQUIPMENT_EMPTY, NeState#state.equipment)
+  ].
+
+%%create_ne_with_equipment() ->
+  
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%% HELPER FUNCTIONS %%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Creates The simplest NE instance
+create_NE(NeName)->
+  #state{attr = #{ne_name => NeName}}.
+
+create_ne_with_eq(NeName, Equipment) ->
+  NE = create_NE(NeName),
+  NE#state{equipment = Equipment}.
+
+generate_NEs(N) ->
+  [create_NE("ne_process_" ++ integer_to_list(No)) || No <- lists:seq(1, N)].
+
 

@@ -20,7 +20,7 @@
 -export([count_ne/0, shutdown/0]).
 
 %% Application API
--export([list_all/0, get/1, add_ne/1, remove_ne/1, stop_ne/1, ne_count/0]).
+-export([list_all/0, get/1, add_ne/1, remove_ne/1, stop_ne/1, ne_count/0, get_ne/1]).
 
 -define(NET_SUP, network_sup).
 
@@ -82,8 +82,15 @@ ne_count() ->
   {workers, NeProcCount} = lists:keyfind(workers, 1, supervisor:count_children(?NET_SUP)),
   NeProcCount.
 
+%% Gets Child from network supervisor
 get(NeId) ->
   {ok, lists:keyfind(NeId, 1, supervisor:which_children(?NET_SUP))}.
+
+
+%% Gets NE data, whole #state record
+get_ne(NePid) ->
+  {ok, NeData} = gen_server:call(NePid, {get_data}),
+  NeData.
 
 %% Add Network Element as a child to This optical network
 %% Takes tuple {NeName:string, NeType:atom()}
