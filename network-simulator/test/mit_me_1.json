@@ -1,0 +1,182 @@
+{
+  "systlog": {
+    "dnm": "systlog",
+    "self": "/mit/me/1/systlog",
+    "log": "/mit/me/1/systlog/log",
+    "ctyp": "/cim/mm/mot/log,systlog"
+  },
+  "locn": "Galaxy far away",
+  "sec": {
+    "unp": {
+      "dnm": "unp",
+      "self": "/mit/me/1/sec/unp",
+      "mxl": 64,
+      "mnl": 4,
+      "mnlt": 2,
+      "mnd": 1,
+      "ctyp": "/cim/mm/mot/sec,unp",
+      "mnsc": 1
+    },
+    "pwp": {
+      "mnlc": 1,
+      "enc": "Your password will expire soon",
+      "dnm": "pwp",
+      "self": "/mit/me/1/sec/pwp",
+      "mnuc": 1,
+      "mnl": 8,
+      "hl": 5,
+      "mnsc": 1,
+      "mnd": 1,
+      "ctyp": "/cim/mm/mot/sec,pwp",
+      "mxa": 0
+    },
+    "crt": "/mit/me/1/sec/crt",
+    "author": [
+      "loc",
+      "tccsp"
+    ],
+    "dnm": "sec",
+    "bnr": "This is a private system. Unauthorized access or use may lead to prosecution.",
+    "self": "/mit/me/1/sec",
+    "mns": 5,
+    "tccs": {
+      "ae": false,
+      "dnm": "tccs",
+      "self": "/mit/me/1/sec/tccs",
+      "dp": "tdpla",
+      "rmts": "/mit/me/1/sec/tccs/rmts",
+      "plce": true,
+      "type": "pap",
+      "ctyp": "/cim/mm/mot/sec,tccs"
+    },
+    "sk": "/mit/me/1/sec/sk",
+    "secp": {
+      "ftp": {
+        "dnm": "ftp"
+      },
+      "http": {
+        "dnm": "http"
+      },
+      "dnm": "secp",
+      "self": "/mit/me/1/sec/secp",
+      "sp": {
+        "dnm": "sp"
+      },
+      "scp": {
+        "dnm": "scp"
+      },
+      "sftp": {
+        "dnm": "sftp"
+      },
+      "ssl": {
+        "dnm": "ssl",
+        "crt": "/mit134878093430363508"
+      },
+      "ssh": {
+        "dnm": "ssh",
+        "kp": "/mit69034309"
+      },
+      "https": {
+        "dnm": "https"
+      },
+      "tftp": {
+        "dnm": "tftp"
+      },
+      "tln": {
+        "dnm": "tln"
+      },
+      "ctyp": "/cim/mm/mot/sec,secp"
+    },
+    "usr": "/mit/me/1/sec/usr",
+    "rl": "/mit/me/1/sec/rl",
+    "ctyp": "/cim/mm/mot/sec,sec"
+  },
+  "systod": {
+    "dnm": "systod",
+    "self": "/mit/me/1/systod",
+    "ntptod": {
+      "srvtype": "dhcp",
+      "actsrvrtd": 0,
+      "actsrv": "0.0.0.0",
+      "fm": {
+        "dnm": "fm",
+        "entname": "ntptod"
+      },
+      "dnm": "ntptod",
+      "srvinterval": 0,
+      "actsrvprec": 0,
+      "srvlist": [
+        "0.0.0.0",
+        "0.0.0.0"
+      ],
+      "self": "/mit/me/1/systod/ntptod",
+      "ctyp": "/cim/mm/mot/tmdt,ntptod"
+    },
+    "timsrc": "local",
+    "time": "2016-03-17T12:13:20Z",
+    "ctyp": "/cim/mm/mot/tmdt,systod"
+  },
+  "ct": {
+    "rev": "29"
+  },
+  "systoz": {
+    "dstsday": 31,
+    "dstehr": 0,
+    "dstUtcOffset": {
+      "min": 0,
+      "hour": 0,
+      "sign": "positive"
+    },
+    "dnm": "systoz",
+    "self": "/mit/me/1/systoz",
+    "dstsmin": 0,
+    "dstemin": 0,
+    "dsteday": 31,
+    "dstenab": false,
+    "dstemon": 11,
+    "dstsmon": 11,
+    "dstshr": 0,
+    "ctyp": "/cim/mm/mot/tmdt,systoz",
+    "utcOffset": {
+      "min": 1,
+      "hour": 0,
+      "sign": "positive"
+    }
+  },
+  "netype": "ge112Ne",
+  "sysipaddr": "192.168.0.1",
+  "self": "/mit/me/1",
+  "almsum": {
+    "dnm": "almsum",
+    "totwarn": 0,
+    "totnr": 0,
+    "totmj": 0,
+    "totmn": 0,
+    "totcr": 0,
+    "self": "/mit/me/1/almsum",
+    "ctyp": "/cim/mm/mot/almsum,almsum",
+    "totna": 0
+  },
+  "sysdb": {
+    "dnm": "sysdb",
+    "self": "/mit/me/1/sysdb",
+    "ctyp": "/cim/mm/mot/srdm,sysdb"
+  },
+  "sysdiag": {
+    "dnm": "sysdiag",
+    "self": "/mit/me/1/sysdiag",
+    "ctyp": "/cim/mm/mot/smdm,sysdiag"
+  },
+  "descrip": "AOS DEV",
+  "almprof": "/mit/me/1/almprof",
+  "nename": "Network Element GE112",
+  "ctyp": "/cim/mm/moc/me,me",
+  "neid": "/me=1",
+  "respool": "/mit/me/1/respool",
+  "eqh": "/mit/me/1/eqh",
+  "pmprof": "/mit/me/1/pmprof",
+  "dnm": "1",
+  "contact": "Obi Wan Kenobi",
+  "sn": "/mit/me/1/sn",
+  "router": "/mit/me/1/router"
+}

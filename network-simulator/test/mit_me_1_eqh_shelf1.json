@@ -1,0 +1,65 @@
+//mit/me/1/eqh/shelf,1
+{
+  "manufacid": "UN344269584",
+  "clei": "CNL1590GAA",
+  "name": "/me=1/eqh=shelf,1",
+  "dnm": "1",
+  "self": "/mit/me/1/eqh/shelf,1",
+  "eqhtyp": "shelf",
+  "manufacdat": "20131215",
+  "eqh": "/mit/me/1/eqh/shelf,1/eqh",
+  "usrlbl": "",
+  "sh": {
+    "advaslf": {
+      "compat": 0,
+      "macaddr": "02:0a:00:ea:01:02",
+      "name": "GE112 pizza box",
+      "maccnt": 1,
+      "self": "/mit/me/1/eqh/shelf,1/sh/advaslf",
+      "uhi": "4711",
+      "dnm": "advaslf",
+      "oemid": 0,
+      "ctyp": "/cim/mm/mot/adeq,advaslf"
+    },
+    "dnm": "sh",
+    "self": "/mit/me/1/eqh/shelf,1/sh",
+    "almsum": {
+      "dnm": "almsum",
+      "totwarn": 0,
+      "totnr": 0,
+      "totmj": 0,
+      "totmn": 0,
+      "totcr": 0,
+      "self": "/mit/me/1/eqh/shelf,1/sh/almsum",
+      "ctyp": "/cim/mm/mot/almsum,almsum",
+      "totna": 0
+    },
+    "shtyp": "ge112shelf",
+    "fm": {
+      "dnm": "fm",
+      "self": "/mit/me/1/eqh/shelf,1/sh/fm",
+      "entname": "sh",
+      "ctyp": "/cim/mm/mot/fm,fm"
+    },
+    "ctyp": "/cim/mm/mot/eq,sh",
+    "msid": 1
+  },
+  "sm": {
+    "operstate": "normal",
+    "dnm": "sm",
+    "self": "/mit/me/1/eqh/shelf,1/sm",
+    "admstate": "is",
+    "sstlist": [],
+    "ctyp": "/cim/mm/mot/stt,sm",
+    "issstlist": []
+  },
+  "itemnum": "1044019001-01",
+  "serial": "LBADVA00000000001",
+  "hwrev": "01.02.03",
+  "manufacsite": "Atlanta",
+  "id": "1",
+  "ctyp": "/cim/mm/moc/eq,eqh",
+  "ct": {
+    "rev": "7"
+  }
+}

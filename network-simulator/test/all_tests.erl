@@ -25,6 +25,11 @@
     {"/mit/me/2", #eqp{id = "/mit/me/2", parent = "/mit/me", children = []}}
   ])).
 
+-define(EQUIPMENT, dict:from_list(
+  [ {"/mit/me",   #eqp{id = "/mit/me", parent = "/mit", children = ["/mit/me/1", "/mit/me/2"]}},
+    {"/mit/me/1", #eqp{id = "/mit/me/1", parent = "/mit/me", children = []}}
+  ])).
+
 %% Adding NE process Performance.
 %% Test Starts network , add N == ?BULK_SIZE Processes, remove all process and stop network process.
 %%
@@ -82,8 +87,8 @@ bulk_remove_network_elements_test_() ->
 equipment_configuration_test_() ->
   {
     "NE can be created with any (possibly empty) Equipment configuration. Eqp should have directory structure (tree)",
-    ?setup([fun create_ne_empty_equipment/0])
-%%    , fun create_ne_with_eqipment/0
+    ?setup([fun create_ne_empty_equipment/0,
+            fun create_ne_with_eqipment/0])
   }.
 
 get_ne_by_uri_test() ->
@@ -177,6 +182,14 @@ create_ne_empty_equipment() ->
   [
     ?_assert(is_record(NeState, state)),
     ?_assertEqual(?EQUIPMENT_EMPTY, NeState#state.equipment)
+  ].
+
+create_ne_with_eqipment() ->
+  {ok, Pid} = network:add_ne(create_ne_with_eq("Test_NE_Empty_Eqp", ?EQUIPMENT)),
+  NeState = network:get_ne(Pid),
+  [
+    ?_assert(is_record(NeState, state)),
+    ?_assertEqual(?EQUIPMENT, NeState#state.equipment)
   ].
 
 %%create_ne_with_equipment() ->
