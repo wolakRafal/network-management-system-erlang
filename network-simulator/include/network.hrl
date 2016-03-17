@@ -20,7 +20,7 @@
 -record(state, {
   equipment     = dict:new(),
   attr          = #{} :: map(),     %% Attributes of device, KV store
-  plugs         = #{}  :: map(),     %% equipped plugs (key: plug id, val: contain record #plug)
+  plugs         = #{} :: map(),     %% equipped plugs (key: plug id, val: contain record #plug)
   controlPorts  = []  :: pid(),     %% List of control ports (PIDs), e.g where to send events from event log
   routingTable  = #{} :: map(),     %% routing table
   eventLog      = []  :: list(),    %% Log with all events on device, limited list

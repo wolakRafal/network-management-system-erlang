@@ -20,9 +20,9 @@
 
 %% Equipment test data
 -define(EQUIPMENT_EMPTY, dict:from_list(
-  [ "/mit/me", #eqp{id = "/mit/me", parent = "/mit", children = ["/mit/me/1", "/mit/me/2"]},
-    "/mit/me/1" #eqp{id = "/mit/me/1", parent = "/mit/me", children = []},
-    "/mit/me/2" #eqp{id = "/mit/me/2", parent = "/mit/me", children = []}
+  [ {"/mit/me", #eqp{id = "/mit/me", parent = "/mit", children = ["/mit/me/1", "/mit/me/2"]}},
+    {"/mit/me/1", #eqp{id = "/mit/me/1", parent = "/mit/me", children = []}},
+    {"/mit/me/2", #eqp{id = "/mit/me/2", parent = "/mit/me", children = []}}
   ])).
 
 %% Adding NE process Performance.

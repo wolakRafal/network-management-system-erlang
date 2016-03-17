@@ -89,8 +89,7 @@ get(NeId) ->
 
 %% Gets NE data, whole #state record
 get_ne(NePid) ->
-  {ok, NeData} = gen_server:call(NePid, {get_data}),
-  NeData.
+  gen_server:call(NePid, get_data).
 
 %% Add Network Element as a child to This optical network
 %% Takes tuple {NeName:string, NeType:atom()}

@@ -65,9 +65,7 @@ start_link(Args) ->
   {stop, Reason :: term()} | ignore).
 init(InitState) when is_record(InitState, state) ->
 %%  io:format("Ne Device Started : ~p~n", [InitState]),
-  {ok, #state{
-    equipment = InitState#state.equipment,
-    attr = InitState#state.attr}}.
+  {ok, InitState}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -119,6 +117,9 @@ handle_call({add_subscriber, SubscriberPid}, _From, S) ->
 
 handle_call(flush_log_event, _From, S) ->
   {reply, ok, S#state{eventLog = []}};
+
+handle_call(get_data, _From, S) ->
+  {reply, S, S};
 
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
