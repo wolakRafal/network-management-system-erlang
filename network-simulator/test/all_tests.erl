@@ -18,18 +18,6 @@
 -define(REG_NAME, network_sup).
 -define(BULK_SIZE, 100).
 
-%% Equipment test data
--define(EQUIPMENT_EMPTY, dict:from_list(
-  [ {"/mit/me", #eqp{id = "/mit/me", parent = "/mit", children = ["/mit/me/1", "/mit/me/2"]}},
-    {"/mit/me/1", #eqp{id = "/mit/me/1", parent = "/mit/me", children = []}},
-    {"/mit/me/2", #eqp{id = "/mit/me/2", parent = "/mit/me", children = []}}
-  ])).
-
--define(EQUIPMENT, dict:from_list(
-  [ {"/mit/me",   #eqp{id = "/mit/me", parent = "/mit", children = ["/mit/me/1", "/mit/me/2"]}},
-    {"/mit/me/1", #eqp{id = "/mit/me/1", parent = "/mit/me", children = []}}
-  ])).
-
 %% Adding NE process Performance.
 %% Test Starts network , add N == ?BULK_SIZE Processes, remove all process and stop network process.
 %%
@@ -84,24 +72,6 @@ bulk_remove_network_elements_test_() ->
     ?setup({timeout, 10*60, fun remove_bulk/0})
   }.
 
-equipment_configuration_test_() ->
-  {
-    "NE can be created with any (possibly empty) Equipment configuration. Eqp should have directory structure (tree)",
-    ?setup([fun create_ne_empty_equipment/0,
-            fun create_ne_with_eqipment/0])
-  }.
-
-get_ne_by_uri_test() ->
-  {"NE can be retreived by uri. (Basic Attributes)"}.
-
-get_all_ne_attributes_by_uri_test() ->
-  {"It should be possible to get All NE configuration by uri. (Full Audit Sync)"}.
-
-get_specific_attr_of_ne_by_uri_test() ->
-  {"It should be possible to retreive specific attributes of NE configuration by uri. (Partial Audit Sync)"}.
-
-get_subtree_of_ne_test() ->
-  {"It should be possible to retreive subtree of attributes. (Partial Audit Sync)"}.
 
 durability_test() ->
   {"Network shoud be persisted in remote storage. Should recover from restarts and crushes"}.
@@ -176,21 +146,6 @@ remove_bulk() ->
     ?_assertEqual(0, network:count_ne())
   ].
 
-create_ne_empty_equipment() ->
-  {ok, Pid} = network:add_ne(create_ne_with_eq("Test_NE_Empty_Eqp", ?EQUIPMENT_EMPTY)),
-  NeState = network:get_ne(Pid),
-  [
-    ?_assert(is_record(NeState, state)),
-    ?_assertEqual(?EQUIPMENT_EMPTY, NeState#state.equipment)
-  ].
-
-create_ne_with_eqipment() ->
-  {ok, Pid} = network:add_ne(create_ne_with_eq("Test_NE_Empty_Eqp", ?EQUIPMENT)),
-  NeState = network:get_ne(Pid),
-  [
-    ?_assert(is_record(NeState, state)),
-    ?_assertEqual(?EQUIPMENT, NeState#state.equipment)
-  ].
 
 %%create_ne_with_equipment() ->
   

@@ -14,6 +14,7 @@
     kernel,
     stdlib
   ]},
+  {modules, [equipment,ne_device,network,network_sup]},
   {mod, {network, [
     %% { management_domain, md1},
     %% ne record { ne_name, ne_type,

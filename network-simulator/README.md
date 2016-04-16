@@ -25,6 +25,12 @@ Script for compilation in shell:
 
 ```1> file:eval(".compile_all").```
 
+## Supports rebar3
+```
+> ./rebar3 compile
+> ./rebar3 eunits
+```
+
 ## Supported Messages (API)
 
 | Operation name  | Input Params  | Return  | Description   |
