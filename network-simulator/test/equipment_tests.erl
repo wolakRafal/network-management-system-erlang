@@ -38,17 +38,17 @@
 %%% TESTS DESCRIPTIONS %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-equipment_configuration_test_() ->
+equipment_configuration_test() ->
   {
     "NE can be created with any (possibly empty) Equipment configuration. Eqp should have directory structure (tree)",
     ?setup([fun create_ne_empty_equipment/0,
       fun create_ne_with_equipment/0])
   }.
 
-load_equipment_from_JSON_test_() ->
+add_ne_from_JSON_test_() ->
   {
-    "Equipment can be created from JSON",
-    ?setup([fun equipment_JSON/0])
+    "NE with Equipment can be created from JSON",
+    ?setup([fun basic_JSON_test/0])
   }.
 
 get_ne_by_uri_test() ->
@@ -94,8 +94,13 @@ create_ne_with_equipment() ->
     ?_assertEqual(?EQUIPMENT, NeState#state.equipment)
   ].
 
-equipment_JSON() ->
-  ok.
+basic_JSON_test() ->
+  io:fwrite(user, " ~p", [load_file("test/resources/test_1.json")]),
+  [?_assertEqual(load_file("test/resources/test_1.json"), aaaaa)].
+
+equipment_JSON(NePid) ->
+  network:add_ne({file, "mit_me_1.json"}),
+  ?_assertEqual(load_file("mit_me_1.json"), network:get_ne_json(NePid)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %%% HELPER FUNCTIONS %%%
@@ -108,3 +113,8 @@ create_NE(NeName)->
 create_ne_with_eq(NeName, Equipment) ->
   NE = create_NE(NeName),
   NE#state{equipment = Equipment}.
+
+
+load_file(Path) ->
+  {ok, Binary} = file:read_file(Path),
+  jiffy:decode(Binary, [return_maps]).

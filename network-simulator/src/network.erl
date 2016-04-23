@@ -20,7 +20,7 @@
 -export([count_ne/0, shutdown/0]).
 
 %% Application API
--export([list_all/0, get/1, add_ne/1, remove_ne/1, stop_ne/1, ne_count/0, get_ne/1]).
+-export([list_all/0, get/1, add_ne/1, remove_ne/1, stop_ne/1, ne_count/0, get_ne/1, get_ne_json/1]).
 
 -define(NET_SUP, network_sup).
 
@@ -90,6 +90,18 @@ get(NeId) ->
 %% Gets NE data, whole #state record
 get_ne(NePid) ->
   gen_server:call(NePid, get_data).
+
+%% Gets NE Equipment as a JSON.
+get_ne_json(NePid) ->
+  erlang:error(not_implemented),
+  gen_server:call(NePid, get_data_json).
+
+%% Add Network Element as a child to This optical network
+%% Path - path to root JSON file with configuration of ne. It can be multiple files - all hierarchy of eqp
+%% return {ok, ChildPid :: child()}
+%%
+add_ne({file, _Path} = InitState) ->
+  supervisor:start_child(?NET_SUP, InitState);
 
 %% Add Network Element as a child to This optical network
 %% Takes tuple {NeName:string, NeType:atom()}
