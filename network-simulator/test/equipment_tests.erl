@@ -12,6 +12,9 @@
 %% API
 -export([]).
 
+
+%%-import(jiffy, [decode/1, decode/2, encode/1, encode/2]).
+
 -include_lib("eunit/include/eunit.hrl").
 -include("network.hrl").
 
@@ -95,12 +98,13 @@ create_ne_with_equipment() ->
   ].
 
 basic_JSON_test() ->
-  io:fwrite(user, " ~p", [load_file("test/resources/test_1.json")]),
-  [?_assertEqual(load_file("test/resources/test_1.json"), aaaaa)].
+  io:fwrite(user, "MY LOGG ~p~n", [load_json_file("test/resources/test_1.json")]),
+  io:fwrite(user, "MY LOGG2 ~tp~n", [jsx:encode(#{"dog" => "winston", "fish" => "mrs.blub"})]),
+  [?_assertEqual(load_json_file("test/resources/test_1.json"), aaaaa)].
 
 equipment_JSON(NePid) ->
   network:add_ne({file, "mit_me_1.json"}),
-  ?_assertEqual(load_file("mit_me_1.json"), network:get_ne_json(NePid)).
+  ?_assertEqual(load_json_file("mit_me_1.json"), network:get_ne_json(NePid)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %%% HELPER FUNCTIONS %%%
@@ -115,6 +119,6 @@ create_ne_with_eq(NeName, Equipment) ->
   NE#state{equipment = Equipment}.
 
 
-load_file(Path) ->
+load_json_file(Path) ->
   {ok, Binary} = file:read_file(Path),
-  jiffy:decode(Binary, [return_maps]).
+  jsx:decode(Binary).

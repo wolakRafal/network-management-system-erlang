@@ -43,7 +43,7 @@
 -spec(start_link(Args :: term()) ->
   {ok, Pid :: pid()} | ignore | {error, Reason :: term()}).
 start_link(Args) ->
-  gen_server:start_link(?MODULE, Args, []). % this process has no name thus  is not registered
+  gen_server:start_link(?MODULE, Args, []). % this process has no name
 
 %%%===================================================================
 %%% gen_server callbacks
