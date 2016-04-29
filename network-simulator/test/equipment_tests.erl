@@ -51,7 +51,7 @@ equipment_configuration_test() ->
 add_ne_from_JSON_test_() ->
   {
     "NE with Equipment can be created from JSON",
-    ?setup([fun basic_JSON_test/0])
+    ?setup([fun basic_JSON_parsing/0])
   }.
 
 get_ne_by_uri_test() ->
@@ -97,10 +97,11 @@ create_ne_with_equipment() ->
     ?_assertEqual(?EQUIPMENT, NeState#state.equipment)
   ].
 
-basic_JSON_test() ->
+basic_JSON_parsing() ->
   io:fwrite(user, "MY LOGG ~p~n", [load_json_file("test/resources/test_1.json")]),
-  io:fwrite(user, "MY LOGG2 ~tp~n", [jsx:encode(#{"dog" => "winston", "fish" => "mrs.blub"})]),
-  [?_assertEqual(load_json_file("test/resources/test_1.json"), aaaaa)].
+  io:fwrite(user, "MY LOGG2 ~tp~n", [jsx:encode(#{<<"dog">> => <<"winston">>, <<"fish">> => <<"mrs.blub">>})]),
+  Expected = #{<<"foo">> => <<"bar">>, <<"list">> => [1, 1.5, true]},
+  [?_assertEqual(load_json_file("test/resources/test_1.json"), Expected)].
 
 equipment_JSON(NePid) ->
   network:add_ne({file, "mit_me_1.json"}),
