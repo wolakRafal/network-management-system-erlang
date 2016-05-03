@@ -41,7 +41,7 @@
 %%% TESTS DESCRIPTIONS %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-equipment_configuration_test() ->
+equipment_configuration_test_() ->
   {
     "NE can be created with any (possibly empty) Equipment configuration. Eqp should have directory structure (tree)",
     ?setup([fun create_ne_empty_equipment/0,
@@ -51,7 +51,8 @@ equipment_configuration_test() ->
 add_ne_from_JSON_test_() ->
   {
     "NE with Equipment can be created from JSON",
-    ?setup([fun basic_JSON_parsing/0])
+    ?setup([fun basic_JSON_parsing/0,
+            fun equipment_JSON/0])
   }.
 
 get_ne_by_uri_test() ->
@@ -101,11 +102,12 @@ basic_JSON_parsing() ->
   io:fwrite(user, "MY LOGG ~p~n", [load_json_file("test/resources/test_1.json")]),
   io:fwrite(user, "MY LOGG2 ~tp~n", [jsx:encode(#{<<"dog">> => <<"winston">>, <<"fish">> => <<"mrs.blub">>})]),
   Expected = #{<<"foo">> => <<"bar">>, <<"list">> => [1, 1.5, true]},
-  [?_assertEqual(load_json_file("test/resources/test_1.json"), Expected)].
+  ?_assertEqual(load_json_file("test/resources/test_1.json"), Expected).
 
-equipment_JSON(NePid) ->
-  network:add_ne({file, "mit_me_1.json"}),
-  ?_assertEqual(load_json_file("mit_me_1.json"), network:get_ne_json(NePid)).
+equipment_JSON() ->
+  {ok, Pid} = network:add_ne({file, "test/resources/mit_me_1.json"}),
+  ?_assertEqual(load_json_file("test/resources/mit_me_1.json"), network:get_ne_json(Pid)),
+  ok.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %%% HELPER FUNCTIONS %%%

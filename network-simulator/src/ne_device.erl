@@ -65,8 +65,14 @@ start_link(Args) ->
   {stop, Reason :: term()} | ignore).
 init(InitState) when is_record(InitState, state) ->
 %%  io:format("Ne Device Started : ~p~n", [InitState]),
-  {ok, InitState}.
+  {ok, InitState};
 
+init({file, Path}) ->
+  {ok, Binary} = file:read_file(Path),
+  Eqp = jsx:decode(Binary),
+  NeName = maps:get(<<"nename">>, Eqp),
+  InitState = #state{attr = attr = #{ne_name => NeName}, equipment = Eqp, equipmentJson = Binary},
+  {ok, InitState}.
 %%--------------------------------------------------------------------
 %% @private
 %% @doc

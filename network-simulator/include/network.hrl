@@ -18,7 +18,8 @@
 
 %% Ne device state
 -record(state, {
-  equipment     = dict:new(),
+  equipment     :: jsx:json_term(),
+  equipmentJson :: jsx:json_text(),
   attr          = #{} :: map(),     %% Attributes of device, KV store
   plugs         = #{} :: map(),     %% equipped plugs (key: plug id, val: contain record #plug)
   controlPorts  = []  :: pid(),     %% List of control ports (PIDs), e.g where to send events from event log
