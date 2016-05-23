@@ -19,7 +19,7 @@
 %% Ne device state
 -record(state, {
   equipment     :: jsx:json_term(),
-  equipmentJson :: jsx:json_text(),
+  equipmentJson :: jsx:json_text(), %% Experimental, optimization for reads whole JSON?? Not Used Now ??.
   attr          = #{} :: map(),     %% Attributes of device, KV store
   plugs         = #{} :: map(),     %% equipped plugs (key: plug id, val: contain record #plug)
   controlPorts  = []  :: pid(),     %% List of control ports (PIDs), e.g where to send events from event log

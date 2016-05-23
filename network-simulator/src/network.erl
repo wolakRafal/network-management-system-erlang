@@ -100,8 +100,17 @@ get_ne_json(NePid) ->
 %% Path - path to root JSON file with configuration of ne. It can be multiple files - all hierarchy of eqp
 %% return {ok, ChildPid :: child()}
 %%
-add_ne({file, _Path} = InitState) ->
-  supervisor:start_child(?NET_SUP, InitState);
+add_ne({file, Path}) ->
+  {ok, Binary} = file:read_file(Path),
+  Json = jsx:decode(Binary),
+  add_ne({json, Json});
+
+%% Add Network Element as a child to This optical network
+%% _JsonTerm - Equipment in JSON representation as a Erlang Map
+%% return {ok, ChildPid :: child()}
+%%
+add_ne({json, _JsonTerm} = InitState) ->
+  supervisor:start_child(?NET_SUP, [InitState]);
 
 %% Add Network Element as a child to This optical network
 %% Takes tuple {NeName:string, NeType:atom()}

@@ -13,6 +13,7 @@
 
 -include("network.hrl").
 -import(equipment,[]).
+-import(jsx, [is_json/1]).
 
 %% API
 -export([start_link/1, get_all_plugs/1, get_plug/2, update_plug/2, remove_plug/2, add_plug/2, remove_all_plugs/1,
@@ -36,12 +37,15 @@
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Starts the server
+%% Starts the Network Element (NE) Device process.
 %%
 %% @end
 %%--------------------------------------------------------------------
 -spec(start_link(Args :: term()) ->
   {ok, Pid :: pid()} | ignore | {error, Reason :: term()}).
+start_link({json, _Json} = Args) ->
+  gen_server:start_link(?MODULE, Args, []);
+
 start_link(Args) ->
   gen_server:start_link(?MODULE, Args, []). % this process has no name
 
@@ -67,12 +71,11 @@ init(InitState) when is_record(InitState, state) ->
 %%  io:format("Ne Device Started : ~p~n", [InitState]),
   {ok, InitState};
 
-init({file, Path}) ->
-  {ok, Binary} = file:read_file(Path),
-  Eqp = jsx:decode(Binary),
+init({json, Eqp}) when is_map(Eqp) ->
   NeName = maps:get(<<"nename">>, Eqp),
-  InitState = #state{attr = attr = #{ne_name => NeName}, equipment = Eqp, equipmentJson = Binary},
+  InitState = #state{attr = #{ne_name => NeName}, equipment = Eqp},
   {ok, InitState}.
+
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
