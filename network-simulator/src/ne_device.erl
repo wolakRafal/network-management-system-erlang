@@ -117,6 +117,10 @@ handle_call({get_plugs, []}, _From, S) ->
 handle_call({get_plugs, Keys}, _From, S) ->
   {reply, maps:with(Keys, S#state.plugs), S};
 
+%%% Equipment
+handle_call(get_equipment, _From, S) ->
+  {reply, S#state.equipment, S};
+
 %%% Events
 handle_call({get_events, _StartFrom}, _From, S) ->
   {reply, S#state.eventLog, S};

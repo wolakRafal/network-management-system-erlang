@@ -52,7 +52,8 @@ add_ne_from_JSON_test_() ->
   {
     "NE with Equipment can be created from JSON",
     ?setup([fun basic_JSON_parsing/0,
-            fun equipment_JSON/0])
+            fun equipment_JSON/0,
+            fun complex_equipment_JSON/0])
   }.
 
 get_ne_by_uri_test() ->
@@ -86,28 +87,32 @@ create_ne_empty_equipment() ->
   {ok, Pid} = network:add_ne(create_ne_with_eq("Test_NE_Empty_Eqp", ?EQUIPMENT_EMPTY)),
   NeState = network:get_ne(Pid),
   [
-    ?_assert(is_record(NeState, state)),
-    ?_assertEqual(?EQUIPMENT_EMPTY, NeState#state.equipment)
+    ?assert(is_record(NeState, state)),
+    ?assertEqual(?EQUIPMENT_EMPTY, NeState#state.equipment)
   ].
 
 create_ne_with_equipment() ->
   {ok, Pid} = network:add_ne(create_ne_with_eq("Test_NE_with_eqp", ?EQUIPMENT)),
   NeState = network:get_ne(Pid),
   [
-    ?_assert(is_record(NeState, state)),
-    ?_assertEqual(?EQUIPMENT, NeState#state.equipment)
+    ?assert(is_record(NeState, state)),
+    ?assertEqual(?EQUIPMENT, NeState#state.equipment)
   ].
 
 basic_JSON_parsing() ->
   io:fwrite(user, "MY LOGG ~p~n", [load_json_file("test/resources/test_1.json")]),
   io:fwrite(user, "MY LOGG2 ~tp~n", [jsx:encode(#{<<"dog">> => <<"winston">>, <<"fish">> => <<"mrs.blub">>})]),
   Expected = #{<<"foo">> => <<"bar">>, <<"list">> => [1, 1.5, true]},
-  ?_assertEqual(load_json_file("test/resources/test_1.json"), Expected).
+  ?assertEqual(load_json_file("test/resources/test_1.json"), Expected).
 
 equipment_JSON() ->
   {ok, Pid} = network:add_ne({file, "test/resources/mit_me_1.json"}),
-  ?_assertEqual(load_json_file("test/resources/mit_me_1.json"), network:get_ne_json(Pid)),
-  ok.
+  ?assertEqual(load_json_file("test/resources/mit_me_1.json"), network:get_ne_equipment(Pid)).
+
+complex_equipment_JSON() ->
+  File = "test/resources/full_equipment/mit_me_1.json",
+  {ok, Pid} = network:add_ne({file, File}),
+  ?assertEqual(load_json_file(File), network:get_ne_equipment(Pid)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %%% HELPER FUNCTIONS %%%
