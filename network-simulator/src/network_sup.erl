@@ -49,13 +49,6 @@ start_link(StartArgs) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec(init(Args :: term()) ->
-  {ok, {SupFlags :: {RestartStrategy :: supervisor:strategy(),
-    MaxR :: non_neg_integer(), MaxT :: non_neg_integer()},
-    [ChildSpec :: supervisor:child_spec()]
-  }} |
-  ignore |
-  {error, Reason :: term()}).
 init([{ne_list, _NeList}]) ->
         %%  a simplified one_for_one supervisor, where all child processes
         %% are dynamically added instances of the same process type,
